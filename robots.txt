@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://controlxpro.github.io/auriga-thailand/sitemap.xml

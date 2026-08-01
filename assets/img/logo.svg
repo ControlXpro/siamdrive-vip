@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 84" role="img" aria-label="Auriga Thailand logo">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E3C766"/><stop offset="1" stop-color="#C9A227"/>
+    </linearGradient>
+  </defs>
+  <!-- Auriga constellation mark (Capella emphasized) -->
+  <g stroke="url(#g)" stroke-width="1.4" fill="none" opacity=".9">
+    <path d="M14 58 L30 22 L52 14 L66 34 L54 62 L30 66 Z"/>
+    <path d="M30 22 L54 62" opacity=".35"/>
+  </g>
+  <g fill="url(#g)">
+    <circle cx="14" cy="58" r="2.6"/><circle cx="30" cy="22" r="3"/>
+    <circle cx="52" cy="14" r="4.4"/><circle cx="66" cy="34" r="2.6"/>
+    <circle cx="54" cy="62" r="3"/><circle cx="30" cy="66" r="2.4"/>
+  </g>
+  <!-- Capella flare -->
+  <path d="M52 5 l1.8 6.4 6.4 1.8 -6.4 1.8 -1.8 6.4 -1.8 -6.4 -6.4 -1.8 6.4 -1.8 Z" fill="#F5F1E6" opacity=".9"/>
+  <text x="88" y="46" font-family="Georgia, 'Playfair Display', serif" font-size="30" letter-spacing="7" fill="#F5F1E6">AURIGA</text>
+  <text x="90" y="68" font-family="Arial, Inter, sans-serif" font-size="10.5" letter-spacing="6.5" fill="#C9A227">T H A I L A N D</text>
+</svg>
