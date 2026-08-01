@@ -15,7 +15,10 @@ a{color:var(--ink);text-decoration:none}
 /* header */
 header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
-.brand svg,.brand img{height:30px;width:auto}
+.brand{display:flex;align-items:center;gap:11px}
+.brand img{height:40px;width:auto}
+.brand span{font-weight:700;letter-spacing:.1em;font-size:1.02rem;color:var(--ink)}
+.brand span em{font-style:normal;color:var(--accent);font-weight:500}
 .nav ul{display:flex;gap:30px;list-style:none;align-items:center}
 .nav a{color:var(--muted);font-size:.84rem;font-weight:500;letter-spacing:.02em}
 .nav a:hover,.nav a[aria-current]{color:var(--ink)}
