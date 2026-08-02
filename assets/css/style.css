@@ -153,3 +153,16 @@ footer{padding:60px 0 34px;background:var(--bg);border-top:1px solid var(--line)
   .page-hero{padding:110px 0 80px}
   .gallery{grid-template-columns:1fr}
 }
+
+/* ---- dark home hero ---- */
+.home-hero{padding:170px 0 130px}
+.home-hero::after{background:linear-gradient(90deg,rgba(0,0,0,.78) 25%,rgba(0,0,0,.30) 75%)}
+.home-hero h1 em{color:#C9C9C9}
+.page-hero .btn-gold{background:#fff;color:var(--ink);border-color:#fff}
+.page-hero .btn-gold:hover{opacity:.88}
+.page-hero .btn-ghost{border-color:rgba(255,255,255,.45);color:#fff}
+.page-hero .btn-ghost:hover{border-color:#fff}
+.page-hero .stats{border-top-color:rgba(255,255,255,.22)}
+.page-hero .stats b{color:#fff}
+.page-hero .stats span{color:rgba(255,255,255,.6)}
+@media(max-width:560px){.home-hero{padding:120px 0 90px}}
