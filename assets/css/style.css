@@ -166,3 +166,22 @@ footer{padding:60px 0 34px;background:var(--bg);border-top:1px solid var(--line)
 .page-hero .stats b{color:#fff}
 .page-hero .stats span{color:rgba(255,255,255,.6)}
 @media(max-width:560px){.home-hero{padding:120px 0 90px}}
+
+/* ---- conversion / mobile ---- */
+.btn-wa{background:#25D366;border-color:#25D366;color:#fff;font-weight:600}
+.btn-wa:hover{opacity:.9;color:#fff}
+.btn-wa svg{width:20px;height:20px;fill:#fff;flex:0 0 auto}
+.btn-sm{padding:11px 20px;font-size:.84rem}
+.contact-band .btn-wa{background:#25D366;border-color:#25D366;color:#fff}
+.wa-float{position:fixed;right:18px;bottom:18px;z-index:80;width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:transform .2s}
+.wa-float:hover{transform:scale(1.07)}
+.wa-float svg{width:32px;height:32px;fill:#fff}
+.rate-book{padding:18px 28px 22px;border-top:1px solid var(--line);text-align:center}
+.rate-book .btn{width:100%;justify-content:center}
+.trust{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px;font-size:.8rem;color:#9A9A9A}
+@media(max-width:560px){
+  .btn{width:100%;justify-content:center}
+  .btn-row{flex-direction:column}
+  .wa-float{right:14px;bottom:14px}
+  .nav .cta{padding:9px 16px}
+}
