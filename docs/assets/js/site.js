@@ -155,29 +155,28 @@
   if (qb && window.SD) {
     const P = window.SD, fmt = (n) => n.toLocaleString("en-US");
     const tabs = $$(".qb-tabs button", qb), sel = (n) => $(`[name=${n}]`, qb);
-    let mode = "airport";
+    let mode = "driver";
     const groups = $$("[data-mode]", qb);
     const setMode = (m) => { mode = m; tabs.forEach((t) => t.setAttribute("aria-selected", t.dataset.tab === m)); groups.forEach((g) => (g.hidden = !g.dataset.mode.split(" ").includes(m))); calc(); };
     tabs.forEach((t) => t.addEventListener("click", () => setMode(t.dataset.tab)));
     const calc = () => {
       const v = P.vehicles.find((x) => x.slug === sel("vehicle").value) || P.vehicles[0];
-      let price = null, label = "";
-      if (mode === "airport") { price = v.price.airport; label = "Airport transfer"; }
-      if (mode === "hourly") { const h = sel("hours").value; price = h === "10" ? v.price.bkk10 : v.price.bkk5; label = `Bangkok · ${h} hours`; }
-      if (mode === "intercity") {
-        const r = P.routes.find((x) => x.slug === sel("dest").value), tier = r && P.tiers[r.tier];
-        const col = tier && tier.transfer; price = col ? v.price[col] : null; label = r ? `Bangkok → ${r.name}` : "";
+      const h = sel("hours").value, car = h === "10" ? v.price.bkk10 : v.price.bkk5;
+      let price = car, label = `Private driver · ${h} hours`;
+      const q = new URLSearchParams({ vehicle: v.slug });
+      if (mode === "driver") { q.set("service", "hourly"); q.set("hours", h); }
+      if (mode === "guards") {
+        const g = +sel("guards").value; price = car + g * (h === "10" ? P.bodyguard.h10 : P.bodyguard.h5);
+        label = `Driver + ${g} bodyguard${g > 1 ? "s" : ""} · ${h} hours`; q.set("service", "protection"); q.set("hours", h); q.set("guards", g);
       }
-      $(".qb-price b", qb).textContent = price ? fmt(price) + " THB" : "On request";
+      if (mode === "airport") { price = v.price.airport; label = "Airport transfer"; q.set("service", "airport"); }
+      $(".qb-price b", qb).textContent = fmt(price) + " THB";
       $(".qb-price small", qb).textContent = label + " · " + v.name;
-      const q = new URLSearchParams({ service: mode, vehicle: v.slug });
-      if (mode === "intercity") q.set("dest", sel("dest").value);
-      if (mode === "hourly") q.set("hours", sel("hours").value);
-      if (sel("date").value) q.set("date", sel("date").value);
+      if (sel("date") && sel("date").value) q.set("date", sel("date").value);
       $(".qb-go", qb).href = "/book/?" + q.toString();
     };
     $$("select,input", qb).forEach((i) => i.addEventListener("change", calc));
-    setMode("airport");
+    setMode("driver");
   }
 
   /* refresh triggers once fonts/images settle */

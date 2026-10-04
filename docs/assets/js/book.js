@@ -8,12 +8,15 @@
   const saved = (() => { try { return JSON.parse(localStorage.getItem("sd-booking") || "{}"); } catch { return {}; } })();
 
   const S = Object.assign({
-    service: "airport", airport: "suvarnabhumi-bkk", direction: "arrival", flight: "", date: "", time: "",
-    pickup: "", dropoff: "", hours: "5", dest: "pattaya", trip: "transfer", pax: 2, bags: 2,
+    service: "hourly", airport: "suvarnabhumi-bkk", direction: "arrival", flight: "", date: "", time: "",
+    pickup: "", dropoff: "", hours: "10", dest: "pattaya", trip: "transfer", pax: 2, bags: 2,
     vehicle: "toyota-alphard-40", guards: 0, guardPlan: "h5", escort: "none", ft: false, ftPax: 2, buggy: true,
     pa: 0, extraHours: 0, nights: 0, name: "", phone: "", email: "", notes: "",
   }, saved);
-  ["service", "vehicle", "dest", "hours", "date"].forEach((k) => url.get(k) && (S[k] = url.get(k)));
+  ["service", "vehicle", "dest", "hours", "date", "guardPlan", "escort"].forEach((k) => url.get(k) && (S[k] = url.get(k)));
+  if (url.get("guards")) S.guards = +url.get("guards");
+  const syncGuards = () => { if (S.service === "protection") { if (S.guards < 1) S.guards = 2; if (S.guardPlan !== "transfer") S.guardPlan = S.hours === "10" ? "h10" : "h5"; } };
+  syncGuards();
   if (S.service === "intercity" && url.get("dest")) S.dest = url.get("dest");
 
   let step = 1; const steps = 5;
@@ -25,14 +28,14 @@
   /* ----- price engine ----- */
   const basePrice = (v) => {
     if (S.service === "airport") return S.airport === "u-tapao-utp" ? v.price.pattaya : v.price.airport;
-    if (S.service === "hourly") return S.hours === "10" ? v.price.bkk10 : v.price.bkk5;
+    if (S.service === "hourly" || S.service === "protection") return S.hours === "10" ? v.price.bkk10 : v.price.bkk5;
     if (S.service === "intercity") { const r = route(); const t = r && P.tiers[r.tier]; if (!t || !t[S.trip === "day" ? "day" : "transfer"]) return null; return v.price[t[S.trip === "day" ? "day" : "transfer"]]; }
     if (S.service === "monthly") { const m = P.monthly.find((x) => x.vehicle === v.name); return m ? m.price : null; }
     return null;
   };
   const lines = () => {
     const v = veh(), L = [], b = basePrice(v);
-    const svcLabel = { airport: S.direction === "arrival" ? "Airport pick-up" : "Airport drop-off", hourly: `Bangkok · ${S.hours} hours`, intercity: route() ? `${S.trip === "day" ? "Day trip" : "Transfer"} · ${route().name}` : "Out of town", monthly: "Monthly private driver" }[S.service];
+    const svcLabel = { airport: S.direction === "arrival" ? "Airport pick-up" : "Airport drop-off", hourly: `Private driver · ${S.hours} hours`, protection: `Private driver · ${S.hours} hours`, intercity: route() ? `${S.trip === "day" ? "Day trip" : "Transfer"} · ${route().name}` : "Out of town", monthly: "Monthly private driver" }[S.service];
     L.push([`${svcLabel} — ${v.name}`, b]);
     if (S.extraHours > 0 && S.service !== "monthly") L.push([`Extra time × ${S.extraHours} h`, v.price.overtime * S.extraHours]);
     if (S.nights > 0 && S.service === "intercity") L.push([`Overnight outside Bangkok × ${S.nights}`, P.overnight * S.nights]);
@@ -81,7 +84,7 @@
   };
   const renderSummary = () => {
     const v = veh(), L = lines(), T = total();
-    const where = S.service === "airport" ? `${airport().short} (${airport().code}) · ${S.direction === "arrival" ? "pick-up" : "drop-off"}` : S.service === "intercity" ? `Bangkok → ${route() ? route().name : ""}` : S.service === "hourly" ? "Bangkok, as directed" : "Bangkok, monthly";
+    const where = S.service === "airport" ? `${airport().short} (${airport().code}) · ${S.direction === "arrival" ? "pick-up" : "drop-off"}` : S.service === "intercity" ? `Bangkok → ${route() ? route().name : ""}` : S.service === "hourly" ? "Private driver, Bangkok" : S.service === "protection" ? "Driver + bodyguards, Bangkok" : "Bangkok, monthly";
     $(".summary dl", root).innerHTML = [["Service", where], ["Date", S.date || "—"], ["Time", S.time || "—"], ["Vehicle", v.name], ["Guests", `${S.pax} · ${S.bags} bags`]].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
     $(".summary-lines", root).innerHTML = L.map(([a, b]) => `<div><span>${a}</span><span>${b == null ? "On request" : fmt(b)}</span></div>`).join("");
     $(".summary-total b", root).textContent = T == null ? "On request" : fmt(T);
@@ -91,10 +94,10 @@
     const v = veh(), L = lines(), T = total();
     const rows = [
       "Hello SiamDrive, I would like to book:", "",
-      `• Service: ${{ airport: "Airport transfer", hourly: "Hourly chauffeur", intercity: "Out-of-town", monthly: "Monthly private driver" }[S.service]}`,
+      `• Service: ${{ airport: "Airport transfer", hourly: "Private driver", protection: "Private driver + bodyguards", intercity: "Out-of-town", monthly: "Monthly private driver" }[S.service]}`,
       S.service === "airport" ? `• Airport: ${airport().name} (${airport().code}) — ${S.direction === "arrival" ? "arrival pick-up" : "departure drop-off"}${S.flight ? " · Flight " + S.flight : ""}` : null,
       S.service === "intercity" && route() ? `• Destination: ${route().name} (${S.trip === "day" ? "day trip, return" : "one-way transfer"})` : null,
-      S.service === "hourly" ? `• Duration: ${S.hours} hours` : null,
+      (S.service === "hourly" || S.service === "protection") ? `• Duration: ${S.hours} hours` : null,
       `• Date & time: ${S.date || "TBC"} ${S.time || ""}`.trim(),
       S.pickup ? `• Pick-up: ${S.pickup}` : null, S.dropoff ? `• Drop-off: ${S.dropoff}` : null,
       `• Vehicle: ${v.name}`, `• Guests: ${S.pax} · Luggage: ${S.bags}`, "",
@@ -108,7 +111,7 @@
   /* ----- bind inputs ----- */
   $$("[data-group]", root).forEach((b) => b.addEventListener("click", () => {
     const g = b.dataset.group; if (g === "vehicle") return;
-    S[g] = b.dataset.value; press(g, S[g]); save(); show();
+    S[g] = b.dataset.value; syncGuards(); ["guards"].forEach((k) => { const o = root.querySelector(`[data-key=${k}] output`); if (o) o.textContent = S[k]; }); press(g, S[g]); press("guardPlan", S.guardPlan); save(); show();
   }));
   $$("[data-bind]", root).forEach((i) => {
     const k = i.dataset.bind; if (S[k] !== undefined && S[k] !== "") i.value = S[k];

@@ -24,7 +24,7 @@ for (const u of urls) for (const [w, h, dpr] of sizes) {
   const H = await page.evaluate(() => document.body.scrollHeight);
   for (let y = 0; y < H; y += Math.round(h * 0.7)) { await page.evaluate((y) => window.scrollTo(0, y), y); await new Promise((r) => setTimeout(r, 160)); }
   await page.evaluate(() => window.scrollTo(0, 0)); await new Promise((r) => setTimeout(r, 900));
-  const name = (u.replace(/\//g, "_") || "_home") + `-${w}`;
+  const name = (u.replace(/[^a-z0-9-]+/gi, "_") || "_home") + `-${w}`;
   const shot = process.env.QA_FULL ? { path: `${OUT}/${name}.png`, fullPage: true } : { path: `${OUT}/${name}.png` };
   await page.screenshot(shot);
   const info = await page.evaluate(() => ({ title: document.title, h1: document.querySelector("h1")?.innerText.replace(/\s+/g, " "), overflowX: document.documentElement.scrollWidth > innerWidth + 1, height: document.body.scrollHeight }));

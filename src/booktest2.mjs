@@ -1,0 +1,14 @@
+import { createRequire } from "node:module"; import path from "node:path";
+const require = createRequire(import.meta.url);
+const puppeteer = require(path.join(process.env.APPDATA, "npm/node_modules/hyperframes/node_modules/puppeteer-core"));
+const b = await puppeteer.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: "new" });
+const errs = [];
+const run = async (q) => { const p = await b.newPage(); p.on("pageerror", (e) => errs.push(e.message)); await p.goto("http://localhost:8790/book/" + q, { waitUntil: "networkidle2" }); await new Promise((r) => setTimeout(r, 1200));
+  const r = await p.evaluate(() => ({ total: document.querySelector(".summary-total b").textContent, lines: [...document.querySelectorAll(".summary-lines div")].map((d) => d.innerText.replace(/\n/g, " = ")), svc: document.querySelector("[data-group=service][aria-pressed=true]")?.innerText.split("\n")[0] }));
+  console.log(q || "(default)", JSON.stringify(r)); await p.close(); };
+await b.newPage().then((p) => p.goto("http://localhost:8790/").then(() => p.evaluate(() => localStorage.clear())));
+await run("");
+await run("?service=protection&guards=2");
+await run("?service=protection&hours=10&guards=3&vehicle=rowen-vellfire-z");
+await run("?service=protection&escort=e5&guards=2");
+console.log("errors", errs); await b.close();

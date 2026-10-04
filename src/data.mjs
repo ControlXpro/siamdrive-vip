@@ -127,24 +127,29 @@ export const EXPERIENCES = [
 ];
 
 export const SERVICES = [
-  { slug: "airport-transfers", name: "Airport Transfers", img: "hero-airport" },
-  { slug: "hourly-chauffeur", name: "Hourly Chauffeur (As Directed)", img: "svc-chauffeur" },
-  { slug: "city-to-city-transfers", name: "City-to-City Transfers", img: "gen-svc-intercity" },
-  { slug: "day-trips", name: "Private Day Trips", img: "gen-svc-daytrip" },
-  { slug: "monthly-chauffeur", name: "Monthly Private Driver", img: "gen-svc-monthly" },
-  { slug: "bodyguards", name: "Personal Bodyguards", img: "hero-bodyguards" },
+  { slug: "hourly-chauffeur", name: "Private Driver", img: "svc-chauffeur", core: true },
+  { slug: "bodyguards", name: "Personal Bodyguards", img: "hero-bodyguards", core: true },
+  { slug: "monthly-chauffeur", name: "Monthly Private Driver", img: "car-alphard40exec" },
   { slug: "motorcycle-escort", name: "Motorcycle Escort", img: "sec-fleet" },
-  { slug: "airport-fast-track", name: "Airport Fast-Track & VIP Buggy", img: "hero-airport" },
   { slug: "personal-assistant", name: "Personal Assistant & Travel Companion", img: "sec-why" },
   { slug: "corporate-chauffeur", name: "Corporate Chauffeur", img: "gen-svc-corporate" },
-  { slug: "event-transport", name: "Event & VIP Transport", img: "gen-svc-event" },
-  { slug: "wedding-car-hire", name: "Wedding Car Hire", img: "gen-svc-wedding" },
-  { slug: "golf-transfers", name: "Golf Transfers", img: "gen-svc-golf" },
   { slug: "nightlife-chauffeur", name: "Nightlife Chauffeur", img: "gen-svc-nightlife" },
   { slug: "shopping-chauffeur", name: "Shopping Chauffeur", img: "gen-svc-shopping" },
-  { slug: "medical-travel-transport", name: "Medical Travel Transport", img: "gen-svc-medical" },
+  { slug: "event-transport", name: "Event & VIP Transport", img: "gen-svc-event" },
   { slug: "delegation-transport", name: "Delegations & Sports Teams", img: "gen-svc-delegation" },
+  { slug: "wedding-car-hire", name: "Wedding Car Hire", img: "gen-svc-wedding" },
+  { slug: "golf-transfers", name: "Golf Days", img: "gen-svc-golf" },
+  { slug: "medical-travel-transport", name: "Medical Travel Transport", img: "gen-svc-medical" },
+  { slug: "day-trips", name: "Private Day Trips", img: "gen-svc-daytrip" },
+  { slug: "airport-transfers", name: "Airport Transfers", img: "hero-airport" },
+  { slug: "airport-fast-track", name: "Airport Fast-Track & VIP Buggy", img: "hero-airport" },
+  { slug: "city-to-city-transfers", name: "City-to-City Transfers", img: "gen-svc-intercity" },
 ];
+
+// Core offers get top-level pillar URLs; old /services/ URLs redirect here.
+export const PILLARS = { "hourly-chauffeur": "/private-driver/", bodyguards: "/bodyguards/" };
+export const DRIVER_PAGES = ["half-day-driver", "full-day-driver", "business-driver", "family-driver", "driver-with-bodyguard", "english-speaking-driver"];
+export const GUARD_PAGES = ["executive-protection", "vip-celebrity-protection", "event-security", "nightlife-protection", "airport-protection", "family-protection"];
 
 export const JOURNAL = [
   "suvarnabhumi-fast-track-explained", "alphard-vs-vellfire", "hiring-a-bodyguard-in-bangkok",

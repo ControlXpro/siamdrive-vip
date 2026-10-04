@@ -3,6 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as D from "./data.mjs";
+import { buildHome } from "./home.mjs";
+import { buildPillars } from "./pillars.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "docs");
@@ -13,6 +15,7 @@ const load = (n) => { const p = path.join(ROOT, "src/content", n + ".json"); ret
 const C = {
   routes: load("routes"), airports: load("airports"), airportRoutes: load("airport-routes"), districts: load("districts"),
   experiences: load("experiences"), services: load("services"), vehicles: load("vehicles"), faq: load("faq"), journal: load("journal"),
+  drivers: load("drivers"), guards: load("guards"),
 };
 const by = (arr, slug) => arr.find((x) => x.slug === slug) || {};
 const esc = (s = "") => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -54,11 +57,11 @@ const serviceLd = (name, url, low, high, desc, type = "Service") => ({
 });
 
 /* ------------------------------------------------------------------ chrome */
-const NAV = [["Fleet", "/fleet/"], ["Services", "/services/"], ["Routes", "/routes/"], ["Airports", "/airports/"], ["Journal", "/journal/"]];
+const NAV = [["Private Driver", "/private-driver/"], ["Bodyguards", "/bodyguards/"], ["Fleet", "/fleet/"], ["Services", "/services/"], ["Rates", "/pricing/"]];
 const MENU = [
-  ["Book a chauffeur", "/book/", "hero-home"], ["Fleet", "/fleet/", "sec-fleet"], ["Services", "/services/", "svc-chauffeur"],
-  ["Routes", "/routes/", "rt-sriracha"], ["Airports & Fast-Track", "/airports/", "hero-airport"], ["Bodyguards", "/services/bodyguards/", "hero-bodyguards"],
-  ["Bangkok areas", "/bangkok/", "sec-why"], ["Experiences", "/experiences/", "banner-onecall"], ["Journal", "/journal/", "car-sclass"],
+  ["Private driver", "/private-driver/", "svc-chauffeur"], ["Bodyguards", "/bodyguards/", "hero-bodyguards"], ["Book now", "/book/", "hero-home"],
+  ["Fleet", "/fleet/", "sec-fleet"], ["Monthly driver", "/services/monthly-chauffeur/", "car-alphard40exec"], ["All services", "/services/", "sec-why"],
+  ["Airports & Fast-Track", "/airports/", "hero-airport"], ["Routes & day trips", "/routes/", "rt-sriracha"], ["Journal", "/journal/", "car-sclass"],
 ];
 const header = (url) => `
 <header class="hdr"><div class="wrap">
@@ -69,7 +72,7 @@ const header = (url) => `
   </div>
   <div class="hdr-right">
     <div class="status"><i class="dot"></i>Bangkok <span data-bkk-clock>--:--:--</span> · Concierge online</div>
-    ${btn("/book/", "Book now", "btn-light btn-sm", I.cal, 'data-cursor="Book"')}
+    ${btn("/book/?service=hourly", "Book a driver", "btn-light btn-sm", I.cal, 'data-cursor="Book"')}
   </div>
 </div></header>
 <div class="menu" id="menu" aria-label="Site menu">
@@ -87,17 +90,17 @@ const footer = () => `
   <div class="ftr-top">
     <div>
       <a class="brand" href="/"><img src="/assets/img/mark-white.png" alt="" width="30" height="30"><b>SIAMDRIVE<i>.VIP</i></b></a>
-      <p class="muted" style="margin:18px 0 24px;max-width:34ch">Private chauffeurs, airport fast-track and suited security across Bangkok and Thailand. One concierge line, 24 hours a day.</p>
+      <p class="muted" style="margin:18px 0 24px;max-width:34ch">Private drivers by the hour, day or month — and suited, English-speaking bodyguards — across Bangkok. One concierge line, 24 hours a day.</p>
       ${waBtn("Hello SiamDrive, I would like to make a booking", "WhatsApp " + S.phoneDisplay, "btn-wa btn-sm")}
     </div>
-    <div><h4>Services</h4><ul>${D.SERVICES.slice(0, 9).map((s) => `<li><a href="/services/${s.slug}/">${by(C.services, s.slug).h1 ? s.name : s.name}</a></li>`).join("")}</ul></div>
-    <div><h4>Destinations</h4><ul>${D.ROUTES.slice(0, 9).map((r) => `<li><a href="/routes/${r.slug}/">Bangkok → ${r.name.replace(/ \(.*\)/, "")}</a></li>`).join("")}</ul></div>
-    <div><h4>Company</h4><ul>${[["Book online", "/book/"], ["Rates", "/pricing/"], ["Fleet", "/fleet/"], ["Airports", "/airports/"], ["Bangkok areas", "/bangkok/"], ["Experiences", "/experiences/"], ["Journal", "/journal/"], ["How it works", "/how-it-works/"], ["FAQ", "/faq/"], ["About", "/about/"], ["Contact", "/contact/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
+    <div><h4>Private driver</h4><ul>${[["Private driver in Bangkok", "/private-driver/"], ...D.DRIVER_PAGES.map((s) => [by(C.drivers, s).name || s.replace(/-/g, " "), `/private-driver/${s}/`]), ["Monthly private driver", "/services/monthly-chauffeur/"], ["Corporate chauffeur", "/services/corporate-chauffeur/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
+    <div><h4>Protection</h4><ul>${[["Bodyguards in Bangkok", "/bodyguards/"], ...D.GUARD_PAGES.map((s) => [by(C.guards, s).name || s.replace(/-/g, " "), `/bodyguards/${s}/`]), ["Motorcycle escort", "/services/motorcycle-escort/"], ["Personal assistant", "/services/personal-assistant/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
+    <div><h4>Company</h4><ul>${[["Book online", "/book/"], ["Rates", "/pricing/"], ["Fleet", "/fleet/"], ["All services", "/services/"], ["Airports & Fast-Track", "/airports/"], ["Routes & day trips", "/routes/"], ["Bangkok areas", "/bangkok/"], ["Experiences", "/experiences/"], ["Journal", "/journal/"], ["FAQ", "/faq/"], ["About", "/about/"], ["Contact", "/contact/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
   </div>
   <div class="ftr-word" aria-hidden="true">SiamDrive</div>
   <div class="ftr-bottom"><span>© ${new Date().getFullYear()} SiamDrive · Bangkok, Thailand</span><span><a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a> · <a href="/cancellation-policy/">Cancellation</a> · <a href="/sitemap/">Sitemap</a></span><span>Bangkok <span data-bkk-clock>--:--:--</span></span></div>
 </div></footer>
-<nav class="mbar" aria-label="Quick booking"><a class="b1" href="/book/">${I.cal}Book now</a><a class="b2" href="${WA("Hello SiamDrive, I would like to make a booking")}" target="_blank" rel="noopener">${I.wa}WhatsApp</a></nav>`;
+<nav class="mbar" aria-label="Quick booking"><a class="b1" href="/book/?service=hourly">${I.cal}Book a driver</a><a class="b2" href="${WA("Hello SiamDrive, I would like to make a booking")}" target="_blank" rel="noopener">${I.wa}WhatsApp</a></nav>`;
 
 const SD_JSON = JSON.stringify({
   whatsapp: S.whatsapp, vehicles: D.VEHICLES.map(({ slug, name, seats, luggage, cls, img, price }) => ({ slug, name, seats, luggage, cls, img, price })),
@@ -278,7 +281,9 @@ const imgCard = ({ href, img, mono, title, text, foot = "Discover" }) => `<a cla
 const linkGrid = (items) => `<div class="linkgrid">${items.map(([t, h, s]) => `<a href="${h}">${esc(t)}${s ? `<small>${esc(s)}</small>` : ""}</a>`).join("")}</div>`;
 
 /* ------------------------------------------------------------------ writer */
+const svcUrl = (slug) => D.PILLARS[slug] || `/services/${slug}/`;
 function emit(url, html, priority = 0.6) {
+  for (const [slug, to] of Object.entries(D.PILLARS)) html = html.split(`/services/${slug}/`).join(to);
   const dir = path.join(OUT, url);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "index.html"), html);
@@ -290,160 +295,26 @@ const fallback = (name, kind) => ({
 });
 
 /* ================================================================== PAGES */
-// ---------- HOME
-(() => {
-  const featured = ["pattaya", "hua-hin", "khao-yai", "ayutthaya", "rayong", "kanchanaburi"].map((s) => D.ROUTES.find((r) => r.slug === s));
-  const homeFaq = [
-    { q: "How do I book a SiamDrive chauffeur?", a: "Use the booking form for an instant estimate or message our concierge on WhatsApp. We confirm your vehicle, chauffeur and fixed price, usually within minutes." },
-    { q: "Are fuel, tolls and the driver included?", a: "Yes. Every chauffeured rate includes a professional driver, fuel and expressway tolls. Only extra hours, overnight stays outside Bangkok and add-ons are charged separately — all listed upfront." },
-    { q: "Do you track my flight for airport pick-ups?", a: "We monitor your flight and adjust to delays, and your chauffeur meets you in arrivals with a name sign. At Suvarnabhumi you can add Fast-Track and a private electric buggy from the aircraft door." },
-    { q: "Can I book bodyguards or Fast-Track on their own?", a: "Bodyguards and airport Fast-Track are offered together with a SiamDrive car booking, so your protection, arrival and transport are coordinated as one service." },
-    { q: "How do I pay?", a: "Payment details are confirmed on WhatsApp with your booking. Corporate and delegation clients receive a formal invoice." },
-    { q: "Which areas do you cover?", a: "All of Bangkok and its airports, plus transfers and day trips to Pattaya, Hua Hin, Rayong, Khao Yai, Ayutthaya, Kanchanaburi and many more destinations across Thailand." },
-  ];
-  const body = `
-<section class="hero" aria-label="Introduction">
-  <div class="hero-media"><video data-autoplay autoplay muted loop playsinline preload="auto" poster="/assets/video/home-poster.jpg"><source src="/assets/video/home-m.mp4" media="(max-width:720px)" type="video/mp4"><source src="/assets/video/home.mp4" type="video/mp4"></video></div>
-  <div class="hero-word" aria-hidden="true">SiamDrive</div>
-  <div class="wrap hero-body">
-    <div class="hero-top">
-      <div>
-        <p class="eyebrow">Bangkok · Private Chauffeur · Security · Concierge</p>
-        <h1 class="display" data-split>Arrive like you <em>own</em> the city.</h1>
-        <p class="lead">Chauffeured Alphards and Porsche Cayenne, suited bodyguards and VIP airport Fast-Track — orchestrated by one concierge, 24 hours a day.</p>
-        <div class="hero-cta">${bookBtn("", "Book a chauffeur")}${waBtn("Hello SiamDrive, I would like to make a booking", "WhatsApp concierge", "btn-ghost")}</div>
-      </div>
-      <form class="qb" onsubmit="return false" aria-label="Instant price">
-        <div class="qb-tabs" role="tablist"><button type="button" role="tab" data-tab="airport" aria-selected="true">Airport</button><button type="button" role="tab" data-tab="hourly">By the hour</button><button type="button" role="tab" data-tab="intercity">Out of town</button></div>
-        <div class="qb-grid">
-          <div class="field full" data-mode="intercity" hidden><label for="qb-dest">Destination</label><select id="qb-dest" name="dest">${D.ROUTES.map((r) => `<option value="${r.slug}">${esc(r.name)}</option>`).join("")}</select></div>
-          <div class="field full" data-mode="hourly" hidden><label for="qb-h">Duration</label><select id="qb-h" name="hours"><option value="5">5 hours in Bangkok</option><option value="10">10 hours in Bangkok</option></select></div>
-          <div class="field full" data-mode="airport"><label>Airport</label><select name="airport"><option>Suvarnabhumi (BKK)</option><option>Don Mueang (DMK)</option></select></div>
-          <div class="field"><label for="qb-v">Vehicle</label><select id="qb-v" name="vehicle">${D.VEHICLES.map((v) => `<option value="${v.slug}"${v.slug === "toyota-alphard-40" ? " selected" : ""}>${v.name}</option>`).join("")}</select></div>
-          <div class="field"><label for="qb-d">Date</label><input id="qb-d" name="date" type="date"></div>
-        </div>
-        <div class="qb-foot"><div class="qb-price"><small>Airport transfer</small><b>—</b></div><a class="btn btn-light btn-sm qb-go" href="/book/"><span class="ic">${I.arrow}</span>Continue</a></div>
-        <p class="qb-note">Fixed price · driver, fuel &amp; tolls included · confirmed on WhatsApp</p>
-      </form>
-    </div>
-    <div class="hero-strip">
-      <div>Concierge<b><i class="dot" style="display:inline-block;margin-right:8px"></i>Online 24/7</b></div>
-      <div>Fleet<b>6 vehicle classes</b></div>
-      <div>Coverage<b>${D.ROUTES.length} routes · 3 airports</b></div>
-      <div>Bangkok time<b data-bkk-clock>--:--:--</b></div>
-    </div>
-  </div>
-</section>
-
-<div class="marquee" aria-hidden="true"><div class="marquee-track">${[...Array(2)].map(() => ["Suvarnabhumi", "Pattaya", "Hua Hin", "Sukhumvit", "Khao Yai", "Riverside", "Ayutthaya", "Rayong", "Don Mueang", "Kanchanaburi", "Thonglor", "Koh Samet"].map((t) => `<span>${t}</span>`).join("")).join("")}</div></div>
-
-<section class="sec"><div class="wrap">
-  <div class="statement-grid">
-    <p class="eyebrow">01 — The standard</p>
-    <div class="statement"><p>We are not a taxi. We are the quiet machinery behind a perfect day in Thailand — the car already waiting, the doors already open, the next move already planned.</p></div>
-  </div>
-  <div class="board" style="margin-top:clamp(60px,8vw,110px)" data-reveal>
-    <div class="panel"><div class="panel-head"><span>Concierge / 01</span><b>Status</b></div>
-      <div class="panel-rows"><div>WhatsApp desk <i></i></div><div>Booking engine <i></i></div><div>Flight monitoring <i></i></div><div>Airport meet &amp; greet <i></i></div></div>
-      <p class="big"><span data-bkk-clock>--:--</span></p><p>Bangkok time. Someone is always awake to answer.</p></div>
-    <div class="panel"><div class="panel-head"><span>Fleet / 02</span><b>In service</b></div>
-      <div class="panel-rows">${D.VEHICLES.map((v) => `<div>${v.name} <i></i></div>`).join("")}</div>
-      <p class="big"><span data-count="6">0</span> classes</p></div>
-    <div class="panel"><div class="panel-head"><span>Coverage / 03</span><b>Routes</b></div>
-      <div class="panel-rows">${["Greater Bangkok", "Eastern Seaboard", "Royal Coast", "Central Heritage", "Western Frontier", "Northeast Gateway"].map((r) => `<div>${r} <i></i></div>`).join("")}</div>
-      <p class="big"><span data-count="${D.ROUTES.length}">0</span> routes</p></div>
-  </div>
-</div></section>
-
-<section class="sec light"><div class="wrap">
-  <div class="index"><span>02 — Services</span><span>Hover to preview</span></div>
-  <div class="sec-head"><h2 class="h2" data-split>Everything your trip <em>needs</em>, under one name.</h2><p class="lead">Book one service or let us choreograph them all — car, protection, airport and assistant on a single itinerary.</p></div>
-  <ul class="svc-list" data-follow>
-    ${[["airport-transfers", "Airport transfers", "Meet & greet at BKK, DMK and U-Tapao", "From " + thb(minFor("airport"))],
-      ["hourly-chauffeur", "Chauffeur by the hour", "5 or 10 hours, as directed in Bangkok", "From " + thb(minFor("bkk5"))],
-      ["airport-fast-track", "Fast-Track & VIP buggy", "From the aircraft door to your car", thb(D.FASTTRACK.arrival) + " / guest"],
-      ["bodyguards", "Personal bodyguards", "Suited, English-speaking, discreet", thb(D.BODYGUARD.h5) + " / guard"],
-      ["city-to-city-transfers", "Out-of-town transfers", "Pattaya, Hua Hin, Khao Yai & beyond", "From " + thb(minFor("outskirt"))],
-      ["monthly-chauffeur", "Monthly private driver", "7 days a week, 10 hours a day", thb(D.MONTHLY[1].price) + " / mo"],
-      ["personal-assistant", "Personal assistant", "Travel companion, errands, nanny", thb(D.PA.h10) + " / day"],
-      ["delegation-transport", "Delegations & teams", "Multi-arrival coordination & invoicing", "On request"]]
-      .map(([s, t, dsc, p], i) => `<li><a href="/services/${s}/" data-img="${IMG(pick(s, D.SERVICES.find((x) => x.slug === s).img))}"><span class="n">0${i + 1}</span><span class="t">${t}</span><span class="d">${dsc}</span><span class="p">${p}</span><span class="ar">${I.arrow.replace("<svg", '<svg width="16" height="16"')}</span></a></li>`).join("")}
-  </ul>
-</div></section>
-
-<section class="sec" style="padding-bottom:60px">
-  <div class="wrap"><div class="index"><span>03 — The fleet</span><span>Scroll →</span></div>
-  <div class="sec-head"><h2 class="h2" data-split>Six cabins. <em>One</em> standard.</h2><p class="lead">Every vehicle is late-model, immaculately prepared and driven by a professional chauffeur. Prices shown are airport transfers — fixed, all-inclusive.</p></div></div>
-  <div class="rail-pin"><div class="rail-wrap"><div class="rail">
-    ${D.VEHICLES.map((v) => `<a class="car" href="/fleet/${v.slug}/" data-cursor="Explore"><div class="car-img"><img src="${IMG(v.img)}" alt="${v.name} chauffeur Bangkok" loading="lazy" width="900" height="600">${v.badge ? `<span class="car-badge">${v.badge}</span>` : ""}</div>
-      <div class="car-body"><p class="mono muted">${v.cls} · ${v.year}</p><h3 class="h3">${v.name}</h3><div class="car-spec"><span>${v.seats} seats</span><span>${v.luggage} bags</span><span>${v.year}</span></div>
-      <div class="car-foot"><div><small>Airport from</small><b>${thb(v.price.airport)}</b></div><div><small>10 hrs Bangkok</small><b style="font-size:1.3rem">${thb(v.price.bkk10)}</b></div></div></div></a>`).join("")}
-    <div class="rail-end"><p class="eyebrow">Full rate card</p><h3 class="h2">Compare <em>every</em> vehicle.</h3>${btn("/pricing/", "See all rates", "btn-ghost")}</div>
-  </div></div><div class="rail-progress"><i></i></div></div>
-</section>
-
-<section class="sec" style="padding-top:60px"><div class="wrap">
-  <div class="index"><span>04 — Signature services</span><span>04 chapters</span></div>
-  <div class="stack-cards">
-    ${[
-      ["Arrival", "Off the plane, <em>into the car.</em>", "At Suvarnabhumi your escort meets you at the aircraft door. A private electric buggy, priority immigration, butler luggage handling — then your chauffeur, waiting at the kerb.", ["Meet at the airbridge by name", "Priority Fast-Track lanes", "Buggy seats 2 guests — allocated per flight", "Flight monitored, delays absorbed"], "airport-fast-track", null, "hero-airport"],
-      ["Protection", "Discreet by default. <em>Unmistakable</em> when it matters.", "Suited, English-speaking security professionals who manage the space around you — through lobbies, crowds, events and late nights — while smoothing every logistical step.", ["Transfer, 5-hour and 10-hour details", "Motorcycle escort for convoys", "Coordinated with your chauffeur", "Booked confidentially on WhatsApp"], "bodyguards", "guards", null],
-      ["Out of town", "The coast, the hills, <em>the temples.</em>", "Fixed-price transfers and 10-hour day trips to Pattaya, Hua Hin, Khao Yai, Ayutthaya and beyond. Your chauffeur waits, adapts and knows where to stop.", ["22 destinations priced online", "Day trips with the car on standby", "Overnight stays arranged", "Child-friendly, luggage-ready MPVs"], "city-to-city-transfers", null, "sec-why"],
-      ["Long stay", "Your own driver, <em>every day.</em>", "Monthly packages for executives, families and long-stay guests: the same chauffeur, the same car, seven days a week, ten hours a day, unlimited kilometres.", ["Alphard 40 or Alphard 30", "7 days · 10 hours daily", "Unlimited kilometres", "Consistent, vetted chauffeur"], "monthly-chauffeur", null, "car-alphard40exec"],
-    ].map(([n, t, p, li, s, vid, im], i) => `<article class="scard"><div class="scard-copy"><span class="n">0${i + 1} / ${n}</span><h3 class="h2">${t}</h3><p class="lead">${p}</p><ul>${li.map((x) => `<li>${x}</li>`).join("")}</ul><div>${btn(`/services/${s}/`, "Explore", "btn-ghost btn-sm")}</div></div>
-      <div class="scard-media">${vid ? `<video data-autoplay muted loop playsinline preload="none" poster="/assets/video/${vid}-poster.jpg"><source src="/assets/video/${vid}-m.mp4" type="video/mp4"></video>` : `<img src="${IMG(im)}" alt="" loading="lazy">`}</div></article>`).join("")}
-  </div>
-</div></section>
-
-<section class="sec light"><div class="wrap">
-  <div class="index"><span>05 — How it works</span><span>Three steps</span></div>
-  <div class="sec-head"><h2 class="h2" data-split>Booked in <em>a minute.</em> Perfect for the day.</h2><p class="lead">No accounts, no apps to download. A fixed price before you commit, and a real person who answers.</p></div>
-  <div class="steps">
-    <div class="step" data-reveal><span class="n">01</span><h3>Choose</h3><p>Pick a service, vehicle and time in our booking form — the price updates instantly as you go.</p></div>
-    <div class="step" data-reveal data-delay=".1"><span class="n">02</span><h3>Confirm</h3><p>Send it to our WhatsApp concierge. We confirm your chauffeur, vehicle and fixed price within minutes.</p></div>
-    <div class="step" data-reveal data-delay=".2"><span class="n">03</span><h3>Arrive</h3><p>Your chauffeur is waiting — name sign, chilled water, flight tracked. Everything else is our problem.</p></div>
-  </div>
-  <div class="hero-cta" style="margin-top:50px">${bookBtn("", "Start booking")}${btn("/how-it-works/", "How it works", "btn-ghost")}</div>
-</div></section>
-
-<section class="sec"><div class="wrap">
-  <div class="index"><span>06 — Destinations</span><span>${D.ROUTES.length} routes from Bangkok</span></div>
-  <div class="sec-head"><h2 class="h2" data-split>Where to <em>next?</em></h2><p class="lead">Fixed-price private transfers and day trips from Bangkok — every route mapped, timed and priced.</p></div>
-  <div class="cards">${featured.map((r) => routeCard(r, `/routes/${r.slug}/`)).join("")}</div>
-  <div class="hero-cta" style="margin-top:40px">${btn("/routes/", "All destinations", "btn-ghost")}</div>
-</div></section>
-
-${C.journal.length ? `<section class="sec-sm"><div class="wrap">
-  <div class="index"><span>07 — Journal</span><span>Field notes</span></div>
-  <div class="sec-head"><h2 class="h2" data-split>Know before <em>you go.</em></h2><p class="lead">Practical guides from the people who drive Bangkok every day.</p></div>
-  <div class="cards">${C.journal.slice(0, 3).map((a, i) => imgCard({ href: `/journal/${a.slug}/`, img: POOL[(i * 3 + 1) % POOL.length], mono: `${a.category} · ${a.readMins} min read`, title: a.h1, text: a.excerpt, foot: "Read" })).join("")}</div>
-</div></section>` : ""}
-
-${faqBlock(homeFaq)}
-${ctaBand()}`;
-  emit("/", layout({
-    url: "/", home: true, title: "SiamDrive — Private Chauffeur & VIP Airport Service, Bangkok",
-    desc: "Private chauffeur service in Bangkok: Alphard & Porsche Cayenne with driver, airport Fast-Track, suited bodyguards and day trips. Fixed prices, 24/7 booking.",
-    body, ld: [faqLd(homeFaq)], preload: '<link rel="preload" as="image" href="/assets/video/home-poster.jpg" fetchpriority="high">',
-  }), 1.0);
-})();
+// ---------- HOME + CORE PILLARS
+const ctx = { D, C, S, I, IMG, thb, minFor, btn, bookBtn, waBtn, pick, by, esc, phero, sections, listBox, faqBlock, ctaBand, aside, rateTable, guardTable, monthlyTable, imgCard, linkGrid, layout, emit, crumbLd, faqLd, serviceLd };
+buildHome(ctx);
 
 // ---------- BOOK
 (() => {
   const opt = (g, v, b, s, extra = "") => `<button type="button" class="opt" data-group="${g}" data-value="${v}" aria-pressed="false" ${extra}><b>${b}</b><small>${s}</small></button>`;
   const counter = (key, label, min, max) => `<div class="field"><label>${label}</label><div class="counter" data-key="${key}" data-min="${min}" data-max="${max}"><button type="button" data-d="-1" aria-label="Less">−</button><output>0</output><button type="button" data-d="1" aria-label="More">+</button></div></div>`;
   const body = `
-${phero({ trail: [["Home", "/"], ["Book", "/book/"]], kicker: "Online booking · Instant estimate", h1: "Reserve your <em>chauffeur.</em>", lead: "Five quick steps. Your price updates live, and your booking is confirmed by a real person on WhatsApp — usually within minutes." })}
+${phero({ trail: [["Home", "/"], ["Book", "/book/"]], kicker: "Private driver · Bodyguards · Instant estimate", h1: "Book your <em>private driver.</em>", lead: "Five quick steps — add bodyguards if you need them. Your price updates live, and a real person confirms on WhatsApp, usually within minutes." })}
 <section class="sec-sm" style="padding-top:20px"><div class="wrap">
 <div class="wiz">
   <div>
     <div class="wiz-steps">${["Service", "Trip", "Vehicle", "Extras", "Details"].map((t, i) => `<button type="button" data-go="${i + 1}"><b>${i + 1}</b>${t}</button>`).join("")}</div>
-    <div class="wiz-panel" data-step="1"><h2>What do you need?</h2><p>Choose the core service — protection, Fast-Track and assistants are added in step 4.</p>
-      <div class="opts c2">${opt("service", "airport", "Airport transfer", "Suvarnabhumi, Don Mueang or U-Tapao — meet &amp; greet included")}${opt("service", "hourly", "Chauffeur by the hour", "5 or 10 hours in Bangkok, as directed")}${opt("service", "intercity", "Out of town", "Transfers and day trips to " + D.ROUTES.length + " destinations")}${opt("service", "monthly", "Monthly driver", "7 days a week · 10 hrs daily · unlimited km")}</div></div>
+    <div class="wiz-panel" data-step="1"><h2>What do you need?</h2><p>Start with your driver — bodyguards, Fast-Track and assistants can be added in step 4.</p>
+      <div class="opts c2">${opt("service", "hourly", "Private driver", "Chauffeur &amp; car for 5 or 10 hours — the driver stays with you")}${opt("service", "protection", "Driver + bodyguards", "Private driver with a suited, English-speaking protection detail")}${opt("service", "monthly", "Monthly private driver", "Same chauffeur, 7 days a week · 10 hrs daily")}${opt("service", "airport", "Airport transfer", "BKK, DMK or U-Tapao — meet &amp; greet, Fast-Track")}${opt("service", "intercity", "Out of town", "Transfers and day trips to " + D.ROUTES.length + " destinations")}</div></div>
     <div class="wiz-panel" data-step="2"><h2>Your trip</h2><p>Where and when. Exact addresses can be confirmed later on WhatsApp.</p>
       <div data-for="airport" style="margin-bottom:12px"><div class="opts">${D.AIRPORTS.map((a) => opt("airport", a.slug, a.code + " · " + a.short, a.code === "UTP" ? "Pattaya / Rayong region" : "Bangkok")).join("")}</div>
         <div class="opts c2" style="margin-top:10px">${opt("direction", "arrival", "Arrival", "Pick-up from the airport")}${opt("direction", "departure", "Departure", "Drop-off at the airport")}</div></div>
-      <div data-for="hourly" style="margin-bottom:12px"><div class="opts c2">${opt("hours", "5", "5 hours", "Meetings, shopping, dinner")}${opt("hours", "10", "10 hours", "A full day at your disposal")}</div></div>
+      <div data-for="hourly protection" style="margin-bottom:12px"><div class="opts c2">${opt("hours", "5", "Half day · 5 hours", "Meetings, shopping, dinner")}${opt("hours", "10", "Full day · 10 hours", "A full day at your disposal")}</div></div>
       <div data-for="intercity" style="margin-bottom:12px"><div class="field" style="margin-bottom:10px"><label>Destination</label><select data-bind="dest">${D.ROUTES.map((r) => `<option value="${r.slug}">${esc(r.name)} · ${r.km} km</option>`).join("")}</select></div>
         <div class="opts c2">${opt("trip", "transfer", "One-way transfer", "Drop-off at your destination")}${opt("trip", "day", "Day trip · 10 hrs", "Car and chauffeur on standby, return to Bangkok")}</div></div>
       <div class="wiz-form">
@@ -456,12 +327,12 @@ ${phero({ trail: [["Home", "/"], ["Book", "/book/"]], kicker: "Online booking ·
       </div></div>
     <div class="wiz-panel" data-step="3"><h2>Choose your vehicle</h2><p>Prices reflect your trip. Vehicles too small for your party are greyed out.</p><div class="opts c2 veh-opts"></div></div>
     <div class="wiz-panel" data-step="4"><h2>Extras</h2><p>Everything is coordinated with your chauffeur. Skip anything you don't need.</p>
-      <div data-ft><div class="addon"><div><b>Suvarnabhumi Fast-Track</b><small data-dir="arrival">Priority immigration ${thb(D.FASTTRACK.arrival)} / guest · private buggy ${thb(D.FASTTRACK.buggy)} (max 2 guests each)</small><small data-dir="departure">Priority departure with butler escort ${thb(D.FASTTRACK.departure)} / guest</small></div><input type="checkbox" data-bind="ft" aria-label="Add Fast-Track" style="width:22px;height:22px;accent-color:#eeeae3"></div>
-        <div class="addon" data-dir="arrival"><div><b>Include electric buggy</b><small>From the aircraft door · buggies allocated automatically</small></div><input type="checkbox" data-bind="buggy" aria-label="Include buggy" style="width:22px;height:22px;accent-color:#eeeae3"></div>
-        <div class="addon"><div><b>Fast-Track guests</b><small>Usually everyone in your party</small></div><div class="counter" data-key="ftPax" data-min="1" data-max="12"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div></div>
       <div class="addon"><div><b>Bodyguards</b><small>${thb(D.BODYGUARD.h5)} per guard (transfer / 5 hrs) · ${thb(D.BODYGUARD.h10)} (10 hrs)</small></div><div class="counter" data-key="guards" data-min="0" data-max="8"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
       <div class="opts" style="margin-bottom:10px">${opt("guardPlan", "transfer", "Guards: transfer", "Point to point")}${opt("guardPlan", "h5", "Guards: 5 hours", "Half day")}${opt("guardPlan", "h10", "Guards: 10 hours", "Full day")}</div>
       <div class="opts" style="margin-bottom:10px">${opt("escort", "none", "No escort", "—")}${opt("escort", "e5", "Motorcycle escort", "Transfer / 5 hours")}${opt("escort", "e10", "Motorcycle escort", "10 hours")}</div>
+      <div data-ft><div class="addon"><div><b>Suvarnabhumi Fast-Track</b><small data-dir="arrival">Priority immigration ${thb(D.FASTTRACK.arrival)} / guest · private buggy ${thb(D.FASTTRACK.buggy)} (max 2 guests each)</small><small data-dir="departure">Priority departure with butler escort ${thb(D.FASTTRACK.departure)} / guest</small></div><input type="checkbox" data-bind="ft" aria-label="Add Fast-Track" style="width:22px;height:22px;accent-color:#eeeae3"></div>
+        <div class="addon" data-dir="arrival"><div><b>Include electric buggy</b><small>From the aircraft door · buggies allocated automatically</small></div><input type="checkbox" data-bind="buggy" aria-label="Include buggy" style="width:22px;height:22px;accent-color:#eeeae3"></div>
+        <div class="addon"><div><b>Fast-Track guests</b><small>Usually everyone in your party</small></div><div class="counter" data-key="ftPax" data-min="1" data-max="12"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div></div>
       <div class="addon"><div><b>Personal assistant</b><small>Travel companion or nanny · ${thb(D.PA.h10)} per 10-hour day</small></div><div class="counter" data-key="pa" data-min="0" data-max="4"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
       <div class="addon"><div><b>Extra hours</b><small>Billed at the vehicle's overtime rate</small></div><div class="counter" data-key="extraHours" data-min="0" data-max="12"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
       <div class="addon" data-for="intercity"><div><b>Overnight stays</b><small>Chauffeur &amp; car stay with you · ${thb(D.OVERNIGHT)} per night</small></div><div class="counter" data-key="nights" data-min="0" data-max="14"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
@@ -479,7 +350,7 @@ ${phero({ trail: [["Home", "/"], ["Book", "/book/"]], kicker: "Online booking ·
     <p class="note">Estimate based on our published rates. Your fixed price is confirmed by the concierge before anything is charged.</p>
   </aside>
 </div></div></section>`;
-  emit("/book/", layout({ url: "/book/", book: true, title: "Book a Private Chauffeur in Bangkok — Instant Price", desc: "Book a private chauffeur, airport transfer, Fast-Track or bodyguard in Bangkok online. Live price estimate, confirmed by our 24/7 WhatsApp concierge in minutes.", body, ld: [crumbLd([["Home", "/"], ["Book", "/book/"]])] }), 0.95);
+  emit("/book/", layout({ url: "/book/", book: true, title: "Book a Private Driver or Bodyguards in Bangkok", desc: "Book a private driver in Bangkok by the hour, day or month and add suited bodyguards. Live price estimate, confirmed by our 24/7 WhatsApp concierge in minutes.", body, ld: [crumbLd([["Home", "/"], ["Book", "/book/"]])] }), 0.95);
 })();
 
 // ---------- FLEET
@@ -544,7 +415,7 @@ ${phero({ trail: [["Home", "/"], ["Services", "/services/"]], kicker: `${D.SERVI
 </div></section>${ctaBand()}`;
   emit("/services/", layout({ url: "/services/", title: "Chauffeur, Security & Airport Services in Bangkok", desc: "All SiamDrive services: airport transfers, hourly chauffeur, Fast-Track & VIP buggy, bodyguards, motorcycle escort, monthly drivers, day trips and delegations.", body, ld: [crumbLd([["Home", "/"], ["Services", "/services/"]])] }), 0.9);
 
-  D.SERVICES.forEach((s) => {
+  D.SERVICES.filter((s) => !s.core).forEach((s) => {
     const c = Object.keys(by(C.services, s.slug)).length ? by(C.services, s.slug) : fallback(s.name, "Service");
     const url = `/services/${s.slug}/`, trail = [["Home", "/"], ["Services", "/services/"], [s.name, url]];
     const img = pick(s.slug, s.img), video = s.slug === "bodyguards" || s.slug === "motorcycle-escort" ? "guards" : null;
@@ -567,6 +438,8 @@ ${faqBlock(c.faqs)}${ctaBand(undefined, undefined, video || "home")}`;
     emit(url, layout({ url, title: c.title || s.name, desc: c.metaDescription, body, image: img + ".webp", ld: [crumbLd(trail), serviceLd(s.name, url, from, null, c.intro || s.name), faqLd(c.faqs)] }), 0.85);
   });
 })();
+
+buildPillars(ctx);
 
 // ---------- AIRPORTS
 (() => {
@@ -794,6 +667,7 @@ simple("/cancellation-policy/", "Cancellation", { title: "Cancellation Policy", 
 (() => {
   const groups = [
     ["Main", [["Home", "/"], ["Book", "/book/"], ["Rates", "/pricing/"], ["Fleet", "/fleet/"], ["Services", "/services/"], ["Airports", "/airports/"], ["Routes", "/routes/"], ["Bangkok", "/bangkok/"], ["Experiences", "/experiences/"], ["Journal", "/journal/"], ["About", "/about/"], ["Contact", "/contact/"], ["FAQ", "/faq/"], ["How it works", "/how-it-works/"]]],
+    ["Private driver", [["Private driver in Bangkok", "/private-driver/"], ...C.drivers.map((x) => [x.name, `/private-driver/${x.slug}/`])]], ["Bodyguards", [["Bodyguards in Bangkok", "/bodyguards/"], ...C.guards.map((x) => [x.name, `/bodyguards/${x.slug}/`])]],
     ["Fleet", D.VEHICLES.map((v) => [v.name, `/fleet/${v.slug}/`])], ["Services", D.SERVICES.map((s) => [s.name, `/services/${s.slug}/`])],
     ["Airports", D.AIRPORTS.map((a) => [a.name, `/airports/${a.slug}/`])], ["Routes", [...D.ROUTES.map((r) => [`Bangkok → ${r.name}`, `/routes/${r.slug}/`]), ...D.AIRPORT_ROUTES.map((ar) => [ar.slug.replace(/-/g, " "), `/routes/${ar.slug}/`])]],
     ["Bangkok", D.DISTRICTS.map((x) => [x.name, `/bangkok/${x.slug}/`])], ["Experiences", D.EXPERIENCES.map((x) => [x.name, `/experiences/${x.slug}/`])], ["Journal", C.journal.map((a) => [a.h1, `/journal/${a.slug}/`])],
@@ -804,7 +678,8 @@ simple("/cancellation-policy/", "Cancellation", { title: "Cancellation Policy", 
   const nf = layout({ url: "/404.html", noindex: true, title: "Page not found", desc: "This page doesn't exist.", body: `<section class="phero" style="min-height:90svh;display:flex;align-items:center"><div class="wrap"><p class="eyebrow">404 · Off route</p><h1 class="display" data-split>Wrong <em>turn.</em></h1><p class="lead" style="margin:24px 0">This page doesn't exist — but your chauffeur still does.</p><div class="hero-cta">${btn("/", "Back home", "btn-light")}${bookBtn()}</div></div></section>` });
   fs.writeFileSync(path.join(OUT, "404.html"), nf);
   const redirect = (to) => `<!doctype html><meta charset="utf-8"><title>Moved</title><link rel="canonical" href="${S.domain}${to}"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${to}"><script>location.replace(${JSON.stringify(to)})</script><a href="${to}">Continue</a>`;
-  [["fleet.html", "/fleet/"], ["bodyguards.html", "/services/bodyguards/"], ["airport-fast-track.html", "/services/airport-fast-track/"]].forEach(([f, to]) => fs.writeFileSync(path.join(OUT, f), redirect(to)));
+  [["fleet.html", "/fleet/"], ["bodyguards.html", "/bodyguards/"], ["airport-fast-track.html", "/services/airport-fast-track/"]].forEach(([f, to]) => fs.writeFileSync(path.join(OUT, f), redirect(to)));
+  for (const [slug, to] of Object.entries(D.PILLARS)) { const d = path.join(OUT, "services", slug); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, "index.html"), redirect(to)); }
 })();
 
 /* ------------------------------------------------------------------ assets + SEO files */
