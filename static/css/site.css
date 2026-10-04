@@ -562,3 +562,4 @@ section{position:relative}
 /* ---------- v2.3: phone performance ---------- */
 @media (max-width:720px){.preloader{display:none}}
 .table-scroll{position:relative}.rates th .sr{position:absolute;left:0;top:0}
+.light .linkgrid a small,.light .svc-list .n,.light .svc-list .p,.light .mono.muted,.light .duo-body .mono{color:var(--paper-mute)}.summary dl{min-height:190px}.summary-lines{min-height:46px}

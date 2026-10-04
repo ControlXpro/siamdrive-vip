@@ -316,8 +316,8 @@ ${phero({ trail: [["Home", "/"], ["Book", "/book/"]], kicker: "Private driver ·
 <section class="sec-sm" style="padding-top:20px"><div class="wrap">
 <div class="wiz">
   <div>
-    <div class="wiz-steps">${["Service", "Trip", "Vehicle", "Extras", "Details"].map((t, i) => `<button type="button" data-go="${i + 1}"><b>${i + 1}</b>${t}</button>`).join("")}</div>
-    <div class="wiz-panel" data-step="1"><h2>What do you need?</h2><p>Start with your driver — bodyguards, Fast-Track and assistants can be added in step 4.</p>
+    <div class="wiz-steps">${["Service", "Trip", "Vehicle", "Extras", "Details"].map((t, i) => `<button type="button" data-go="${i + 1}"${i === 0 ? ' class="on"' : ""}><b>${i + 1}</b>${t}</button>`).join("")}</div>
+    <div class="wiz-panel on" data-step="1"><h2>What do you need?</h2><p>Start with your driver — bodyguards, Fast-Track and assistants can be added in step 4.</p>
       <div class="opts c2">${opt("service", "hourly", "Private driver", "Chauffeur &amp; car for 5 or 10 hours — the driver stays with you")}${opt("service", "protection", "Driver + bodyguards", "Private driver with a suited, English-speaking protection detail")}${opt("service", "monthly", "Monthly private driver", "Same chauffeur, 7 days a week · 10 hrs daily")}${opt("service", "airport", "Airport transfer", "BKK, DMK or U-Tapao — meet &amp; greet, Fast-Track")}${opt("service", "intercity", "Out of town", "Transfers and day trips to " + D.ROUTES.length + " destinations")}</div></div>
     <div class="wiz-panel" data-step="2"><h2>Your trip</h2><p>Where and when. Exact addresses can be confirmed later on WhatsApp.</p>
       <div data-for="airport" style="margin-bottom:12px"><div class="opts">${D.AIRPORTS.map((a) => opt("airport", a.slug, a.code + " · " + a.short, a.code === "UTP" ? "Pattaya / Rayong region" : "Bangkok")).join("")}</div>
