@@ -197,7 +197,7 @@ section{position:relative}
 
 /* statement */
 .statement p{font-family:var(--serif);font-size:clamp(1.9rem,4vw,3.9rem);line-height:1.12;letter-spacing:-.01em;max-width:22ch}
-.statement .w{opacity:.16;transition:opacity .2s}
+.statement .w{opacity:.42;transition:opacity .2s}
 .statement-grid{display:grid;grid-template-columns:.38fr 1fr;gap:40px}
 
 /* spec board (pensatori) */
@@ -445,7 +445,7 @@ section{position:relative}
 /* ---------- footer ---------- */
 .ftr{position:relative;padding:100px 0 30px;border-top:1px solid var(--line);overflow:hidden}
 .ftr-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:80px}
-.ftr h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500;margin-bottom:18px}
+.ftr .fh{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500;margin-bottom:18px}
 .ftr ul{list-style:none;display:grid;gap:9px}
 .ftr ul a{color:var(--bone-2);font-size:15px}.ftr ul a:hover{color:var(--bone)}
 .ftr-word{font-family:var(--serif);font-size:clamp(4rem,16.5vw,17rem);line-height:.8;letter-spacing:.01em;text-align:center;color:transparent;-webkit-text-stroke:1px rgba(238,234,227,.22);user-select:none;margin:20px 0 34px;white-space:nowrap}
@@ -553,9 +553,12 @@ section{position:relative}
   .gridlines{display:none}
   .mbar{bottom:calc(10px + env(safe-area-inset-bottom));padding:7px}
   .prose,.lists,.list-box{min-width:0;overflow-wrap:anywhere}
-  .table-scroll{margin-inline:-4px}
   .rates{font-size:14px}.rates td,.rates th{padding:12px 10px}
   .phero{padding-top:130px}
   .crumbs{font-size:10px}
 }
 .layout>div,.prose{min-width:0}
+
+/* ---------- v2.3: phone performance ---------- */
+@media (max-width:720px){.preloader{display:none}}
+.table-scroll{position:relative}.rates th .sr{position:absolute;left:0;top:0}

@@ -165,6 +165,6 @@ ${ctaBand("Your driver is <em>one message</em> away.", "Tell us when you need a 
   emit("/", layout({
     url: "/", home: true, title: "SiamDrive — Private Driver & Bodyguards in Bangkok",
     desc: "Hire a private driver in Bangkok by the hour, day or month, with suited English-speaking bodyguards on request. Alphard to Porsche Cayenne. Fixed prices, 24/7.",
-    body, ld: [faqLd(homeFaq)], preload: '<link rel="preload" as="image" href="/assets/video/home-poster.jpg" fetchpriority="high">',
+    body, ld: [faqLd(homeFaq)], preload: '<link rel="preload" as="image" href="/assets/video/home-poster.webp" fetchpriority="high">',
   }), 1.0);
 }

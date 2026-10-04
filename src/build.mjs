@@ -66,7 +66,7 @@ const MENU = [
 const header = (url) => `
 <header class="hdr"><div class="wrap">
   <div class="pill">
-    <a class="brand" href="/" aria-label="SiamDrive home"><img src="/assets/img/mark-white.png" alt="" width="30" height="30"><b>SIAMDRIVE<i>.VIP</i></b></a>
+    <a class="brand" href="/"><img src="/assets/img/mark-64.png" alt="" width="30" height="30"><b>SIAMDRIVE<i>.VIP</i></b></a>
     <nav class="nav-links" aria-label="Primary">${NAV.map(([t, h]) => `<a href="${h}"${url.startsWith(h) ? ' aria-current="page"' : ""}>${t}</a>`).join("")}</nav>
     <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span></button>
   </div>
@@ -89,13 +89,13 @@ const footer = () => `
 <footer class="ftr"><div class="wrap">
   <div class="ftr-top">
     <div>
-      <a class="brand" href="/"><img src="/assets/img/mark-white.png" alt="" width="30" height="30"><b>SIAMDRIVE<i>.VIP</i></b></a>
+      <a class="brand" href="/"><img src="/assets/img/mark-64.png" alt="" width="30" height="30"><b>SIAMDRIVE<i>.VIP</i></b></a>
       <p class="muted" style="margin:18px 0 24px;max-width:34ch">Private drivers by the hour, day or month — and suited, English-speaking bodyguards — across Bangkok. One concierge line, 24 hours a day.</p>
       ${waBtn("Hello SiamDrive, I would like to make a booking", "WhatsApp " + S.phoneDisplay, "btn-wa btn-sm")}
     </div>
-    <div><h4>Private driver</h4><ul>${[["Private driver in Bangkok", "/private-driver/"], ...D.DRIVER_PAGES.map((s) => [by(C.drivers, s).name || s.replace(/-/g, " "), `/private-driver/${s}/`]), ["Monthly private driver", "/services/monthly-chauffeur/"], ["Corporate chauffeur", "/services/corporate-chauffeur/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
-    <div><h4>Protection</h4><ul>${[["Bodyguards in Bangkok", "/bodyguards/"], ...D.GUARD_PAGES.map((s) => [by(C.guards, s).name || s.replace(/-/g, " "), `/bodyguards/${s}/`]), ["Motorcycle escort", "/services/motorcycle-escort/"], ["Personal assistant", "/services/personal-assistant/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
-    <div><h4>Company</h4><ul>${[["Book online", "/book/"], ["Rates", "/pricing/"], ["Fleet", "/fleet/"], ["All services", "/services/"], ["Airports & Fast-Track", "/airports/"], ["Routes & day trips", "/routes/"], ["Bangkok areas", "/bangkok/"], ["Experiences", "/experiences/"], ["Journal", "/journal/"], ["FAQ", "/faq/"], ["About", "/about/"], ["Contact", "/contact/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
+    <div><p class="fh">Private driver</p><ul>${[["Private driver in Bangkok", "/private-driver/"], ...D.DRIVER_PAGES.map((s) => [by(C.drivers, s).name || s.replace(/-/g, " "), `/private-driver/${s}/`]), ["Monthly private driver", "/services/monthly-chauffeur/"], ["Corporate chauffeur", "/services/corporate-chauffeur/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
+    <div><p class="fh">Protection</p><ul>${[["Bodyguards in Bangkok", "/bodyguards/"], ...D.GUARD_PAGES.map((s) => [by(C.guards, s).name || s.replace(/-/g, " "), `/bodyguards/${s}/`]), ["Motorcycle escort", "/services/motorcycle-escort/"], ["Personal assistant", "/services/personal-assistant/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
+    <div><p class="fh">Company</p><ul>${[["Book online", "/book/"], ["Rates", "/pricing/"], ["Fleet", "/fleet/"], ["All services", "/services/"], ["Airports & Fast-Track", "/airports/"], ["Routes & day trips", "/routes/"], ["Bangkok areas", "/bangkok/"], ["Experiences", "/experiences/"], ["Journal", "/journal/"], ["FAQ", "/faq/"], ["About", "/about/"], ["Contact", "/contact/"]].map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
   </div>
   <div class="ftr-word" aria-hidden="true">SiamDrive</div>
   <div class="ftr-bottom"><span>© ${new Date().getFullYear()} SiamDrive · Bangkok, Thailand</span><span><a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a> · <a href="/cancellation-policy/">Cancellation</a> · <a href="/sitemap/">Sitemap</a></span><span>Bangkok <span data-bkk-clock>--:--:--</span></span></div>
@@ -135,8 +135,8 @@ function layout({ url, title, desc, body, ld = [], image = "og.jpg", preload = "
 <meta name="twitter:image" content="${ogImg}">
 <link rel="icon" href="/assets/img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/img/mark.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="preload" href="/assets/fonts/InstrumentSerif-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/InterTight-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=${BUILD}">
 ${preload}
 <script type="application/ld+json">${JSON.stringify(graph)}</script>
@@ -209,14 +209,14 @@ const COLS = {
   airport: ["Airport transfer", "airport"], bkk5: ["Bangkok · 5 hrs", "bkk5"], bkk10: ["Bangkok · 10 hrs", "bkk10"], outskirt: ["Outskirt · 10 hrs", "outskirt"],
   pattaya: ["Pattaya · 10 hrs", "pattaya"], longTransfer: ["Long transfer", "longTransfer"], longDay: ["Long day trip", "longDay"], overtime: ["Overtime / hr", "overtime"],
 };
-const rateTable = (cols, opts = {}) => `<div class="table-scroll"><table class="rates"><thead><tr><th>Vehicle</th><th>Seats</th>${cols.map((c) => `<th class="r">${COLS[c] ? COLS[c][0] : c}</th>`).join("")}<th class="r"></th></tr></thead><tbody>
+const rateTable = (cols, opts = {}) => `<div class="table-scroll"><table class="rates"><thead><tr><th>Vehicle</th><th>Seats</th>${cols.map((c) => `<th class="r">${COLS[c] ? COLS[c][0] : c}</th>`).join("")}<th class="r"><span class="sr">Book</span></th></tr></thead><tbody>
 ${D.VEHICLES.map((v) => `<tr><td><a href="/fleet/${v.slug}/">${v.name}</a></td><td>${v.seats}</td>${cols.map((c) => `<td class="r">${thb(v.price[COLS[c] ? COLS[c][1] : c])}</td>`).join("")}<td class="r"><a class="btn btn-ghost btn-sm" href="/book/?vehicle=${v.slug}${opts.q ? "&" + opts.q : ""}">Book</a></td></tr>`).join("")}
 </tbody></table></div>`;
 const routeTable = (r) => {
   const t = D.TIERS[r.tier];
   if (!t.transfer) return `<div class="aside-card"><p class="lead" style="max-width:none">${esc(r.name)} is priced per journey — distance, ferry timing and overnight stays vary. Send your dates on WhatsApp for a fixed quote, usually within minutes.</p><div class="hero-cta">${waBtn(`Hello SiamDrive, please quote Bangkok to ${r.name}`, "Get a fixed quote")}</div></div>`;
   const same = t.transfer === t.day;
-  return `<div class="table-scroll"><table class="rates"><thead><tr><th>Vehicle</th><th>Seats</th><th class="r">${same ? "Transfer or day trip · 10 hrs" : "One-way transfer"}</th>${same ? "" : '<th class="r">Day trip · 10 hrs</th>'}<th class="r">Overtime / hr</th><th class="r"></th></tr></thead><tbody>
+  return `<div class="table-scroll"><table class="rates"><thead><tr><th>Vehicle</th><th>Seats</th><th class="r">${same ? "Transfer or day trip · 10 hrs" : "One-way transfer"}</th>${same ? "" : '<th class="r">Day trip · 10 hrs</th>'}<th class="r">Overtime / hr</th><th class="r"><span class="sr">Book</span></th></tr></thead><tbody>
 ${D.VEHICLES.map((v) => `<tr><td><a href="/fleet/${v.slug}/">${v.name}</a></td><td>${v.seats}</td><td class="r">${thb(v.price[t.transfer])}</td>${same ? "" : `<td class="r">${thb(v.price[t.day])}</td>`}<td class="r">${thb(v.price.overtime)}</td><td class="r"><a class="btn btn-ghost btn-sm" href="/book/?service=intercity&dest=${r.slug}&vehicle=${v.slug}">Book</a></td></tr>`).join("")}
 </tbody></table></div><p class="muted" style="font-size:14px;margin-top:12px">${esc(t.label)} pricing. Driver, fuel and tolls included. Overnight outside Bangkok +${thb(D.OVERNIGHT)} per night.</p>`;
 };
@@ -284,6 +284,14 @@ const linkGrid = (items) => `<div class="linkgrid">${items.map(([t, h, s]) => `<
 const svcUrl = (slug) => D.PILLARS[slug] || `/services/${slug}/`;
 function emit(url, html, priority = 0.6) {
   for (const [slug, to] of Object.entries(D.PILLARS)) html = html.split(`/services/${slug}/`).join(to);
+  html = html.replace(/-poster\.jpg"/g, '-poster.webp"');
+  html = html.replace(/<img src="\/assets\/img\/([\w-]+)\.webp"([^>]*)>/g, (m, n, rest) => {
+    if (!IMGS.has(n + "-800") || /srcset=/.test(rest)) return m;
+    const hero = /data-parallax|fetchpriority/.test(rest);
+    return `<img src="/assets/img/${n}.webp" srcset="/assets/img/${n}-800.webp 800w, /assets/img/${n}.webp 1600w" sizes="${hero ? "100vw" : "(max-width:720px) 92vw, (max-width:1100px) 46vw, 34vw"}"${rest}>`;
+  });
+  html = html.replace(/data-img="\/assets\/img\/([\w-]+)\.webp"/g, (m, n) => IMGS.has(n + "-800") ? `data-img="/assets/img/${n}-800.webp"` : m);
+  html = html.replace(/loading="lazy"(?! decoding)/g, 'loading="lazy" decoding="async"');
   const dir = path.join(OUT, url);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "index.html"), html);
@@ -396,7 +404,7 @@ ${faqBlock(c.faqs)}${ctaBand()}`;
 const SVC_TABLE = {
   "airport-transfers": () => rateTable(["airport", "overtime"], { q: "service=airport" }) + `<h3 class="h3" style="margin:40px 0 16px">Add Suvarnabhumi Fast-Track</h3>` + fastTrackTable(),
   "hourly-chauffeur": () => rateTable(["bkk5", "bkk10", "overtime"], { q: "service=hourly" }),
-  "city-to-city-transfers": () => `<div class="table-scroll"><table class="rates"><thead><tr><th>Destination</th><th>Distance</th><th class="r">From</th><th class="r"></th></tr></thead><tbody>${D.ROUTES.map((r) => `<tr><td><a href="/routes/${r.slug}/">Bangkok → ${esc(r.name)}</a></td><td>${r.km} km · ${r.hrs} hrs</td><td class="r">${routeFrom(r) ? thb(routeFrom(r)) : "On request"}</td><td class="r"><a class="btn btn-ghost btn-sm" href="/book/?service=intercity&dest=${r.slug}">Book</a></td></tr>`).join("")}</tbody></table></div>`,
+  "city-to-city-transfers": () => `<div class="table-scroll"><table class="rates"><thead><tr><th>Destination</th><th>Distance</th><th class="r">From</th><th class="r"><span class="sr">Book</span></th></tr></thead><tbody>${D.ROUTES.map((r) => `<tr><td><a href="/routes/${r.slug}/">Bangkok → ${esc(r.name)}</a></td><td>${r.km} km · ${r.hrs} hrs</td><td class="r">${routeFrom(r) ? thb(routeFrom(r)) : "On request"}</td><td class="r"><a class="btn btn-ghost btn-sm" href="/book/?service=intercity&dest=${r.slug}">Book</a></td></tr>`).join("")}</tbody></table></div>`,
   "day-trips": () => rateTable(["outskirt", "pattaya", "longDay", "overtime"], { q: "service=intercity" }),
   "monthly-chauffeur": monthlyTable,
   bodyguards: guardTable, "motorcycle-escort": guardTable,
@@ -685,6 +693,9 @@ simple("/cancellation-policy/", "Cancellation", { title: "Cancellation Policy", 
 /* ------------------------------------------------------------------ assets + SEO files */
 const copyDir = (src, dst) => { fs.mkdirSync(dst, { recursive: true }); for (const f of fs.readdirSync(src)) { const s = path.join(src, f), d = path.join(dst, f); fs.statSync(s).isDirectory() ? copyDir(s, d) : fs.copyFileSync(s, d); } };
 copyDir(path.join(ROOT, "static"), path.join(OUT, "assets"));
+{ const css = fs.readFileSync(path.join(ROOT, "static/fonts/fonts.css"), "utf8") + " " + fs.readFileSync(path.join(ROOT, "static/css/site.css"), "utf8");
+  const min = css.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").replace(/\s*([{};:,>])\s*/g, "$1").replace(/;}/g, "}").trim();
+  fs.writeFileSync(path.join(OUT, "assets/css/site.css"), min); fs.rmSync(path.join(OUT, "assets/fonts/fonts.css"), { force: true }); }
 fs.writeFileSync(path.join(OUT, "CNAME"), "siamdrive.vip\n");
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");
 fs.writeFileSync(path.join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /404.html\n\nSitemap: ${S.domain}/sitemap.xml\n`);

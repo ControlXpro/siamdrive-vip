@@ -4,13 +4,14 @@
   html.classList.remove("no-js");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const phone = matchMedia("(max-width: 720px)").matches;
   const $ = (s, c = d) => c.querySelector(s), $$ = (s, c = d) => [...c.querySelectorAll(s)];
   const hasGsap = !!window.gsap;
   if (hasGsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
 
   /* ---------- smooth scroll ---------- */
   let lenis = null;
-  if (!reduce && window.Lenis) {
+  if (!reduce && fine && window.Lenis) {
     lenis = new Lenis({ duration: 1.15, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
     if (hasGsap) { lenis.on("scroll", ScrollTrigger.update); gsap.ticker.add((t) => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0); }
     else { const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
@@ -32,7 +33,7 @@
   const pre = $(".preloader");
   const intro = () => {
     html.classList.add("ready");
-    if (!hasGsap || reduce) { if (pre) pre.remove(); $$("[data-split] .line>span").forEach((s) => (s.style.transform = "none")); return; }
+    if (!hasGsap || reduce || phone) { if (pre) pre.remove(); $$("[data-split] .line>span").forEach((s) => (s.style.transform = "none")); return; }
     const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
     if (pre) tl.to(pre, { clipPath: "inset(0 0 100% 0)", duration: 1.1, ease: "expo.inOut", onComplete: () => pre.remove() });
     tl.from(".hero-media", { scale: 1.18, duration: 2.4 }, pre ? "-=.75" : 0)
@@ -40,7 +41,7 @@
       .from(".hero [data-split] .line>span, .phero [data-split] .line>span", { yPercent: 110, duration: 1.4, stagger: .06 }, "<.2")
       .from(".hero .eyebrow, .hero .lead, .hero-cta>*, .qb, .hero-strip>div, .phero .eyebrow, .phero .lead, .phero-meta>*, .crumbs", { y: 28, opacity: 0, duration: 1.2, stagger: .05 }, "<.25");
   };
-  if (pre) {
+  if (pre && !phone) {
     const seen = sessionStorage.getItem("sd-seen");
     const cnt = $(".pl-count"); let n = 0;
     const total = seen ? 350 : 1500, start = performance.now();
