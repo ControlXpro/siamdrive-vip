@@ -16,7 +16,7 @@ export function buildHome(ctx) {
     <ul>${items.map((x) => `<li>${x}</li>`).join("")}</ul>${btn(href, "Book", pop ? "btn-light btn-sm" : "btn-ghost btn-sm", I.cal, 'data-cursor="Book"')}</div>`;
   const body = `
 <section class="hero" aria-label="Introduction">
-  <div class="hero-media"><video data-autoplay autoplay muted loop playsinline preload="auto" poster="/assets/video/home-poster.jpg"><source src="/assets/video/home-m.mp4" media="(max-width:720px)" type="video/mp4"><source src="/assets/video/home.mp4" type="video/mp4"></video></div>
+  <div class="hero-media"><video data-autoplay data-defer muted loop playsinline preload="none" poster="/assets/video/home-poster.jpg"><source src="/assets/video/home-m.mp4" media="(max-width:720px)" type="video/mp4"><source src="/assets/video/home.mp4" type="video/mp4"></video></div>
   <div class="hero-word" aria-hidden="true">SiamDrive</div>
   <div class="wrap hero-body">
     <div class="hero-top">
@@ -165,6 +165,6 @@ ${ctaBand("Your driver is <em>one message</em> away.", "Tell us when you need a 
   emit("/", layout({
     url: "/", home: true, title: "SiamDrive — Private Driver & Bodyguards in Bangkok",
     desc: "Hire a private driver in Bangkok by the hour, day or month, with suited English-speaking bodyguards on request. Alphard to Porsche Cayenne. Fixed prices, 24/7.",
-    body, ld: [faqLd(homeFaq)], preload: '<link rel="preload" as="image" href="/assets/video/home-poster.webp" fetchpriority="high">',
+    body, ld: [faqLd(homeFaq)],
   }), 1.0);
 }

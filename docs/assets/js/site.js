@@ -148,7 +148,8 @@
   const vids = $$("video[data-autoplay]");
   if (vids.length && "IntersectionObserver" in window) {
     const vo = new IntersectionObserver((ents) => ents.forEach((e) => { const v = e.target; if (e.isIntersecting) { v.play().catch(() => {}); } else v.pause(); }), { threshold: .1 });
-    vids.forEach((v) => { v.muted = true; vo.observe(v); });
+    const go = () => vids.forEach((v) => { v.muted = true; vo.observe(v); });
+    document.readyState === "complete" ? setTimeout(go, 300) : addEventListener("load", () => setTimeout(go, 300), { once: true });
   }
 
   /* ---------- quick-book (home hero) ---------- */
