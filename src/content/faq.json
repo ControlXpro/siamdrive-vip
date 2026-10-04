@@ -1,0 +1,152 @@
+[
+  {
+    "group": "Booking",
+    "items": [
+      {
+        "q": "How do I book with SiamDrive?",
+        "a": "All bookings are made on WhatsApp at +66 96 221 2364. Send us your date, pickup address, destination or schedule, number of passengers and luggage, and we will reply with the price for your chosen vehicle."
+      },
+      {
+        "q": "How far in advance should I book?",
+        "a": "As early as you can, especially for airport arrivals, weddings, events and our limited-edition vehicles. Shorter-notice requests are welcome too; message us and we will confirm availability as quickly as possible."
+      },
+      {
+        "q": "When is my booking confirmed?",
+        "a": "Your booking is confirmed once you have agreed the details and price on WhatsApp and payment has been arranged. You will receive written confirmation in the same conversation."
+      },
+      {
+        "q": "Can I book on behalf of someone else?",
+        "a": "Yes. Assistants, travel managers and family members often book for guests. Just give us the passenger's name, contact number and travel details."
+      },
+      {
+        "q": "Can I change my booking after it is confirmed?",
+        "a": "Yes. Message us on WhatsApp with the change — a new time, an extra stop, a different flight — and we will confirm whether it affects the arrangements or the price."
+      }
+    ]
+  },
+  {
+    "group": "Pricing & Payment",
+    "items": [
+      {
+        "q": "What is included in the price?",
+        "a": "All chauffeur prices include the driver, fuel and tolls. The only exception is monthly private driver packages, where fuel and tolls are excluded and settled as used."
+      },
+      {
+        "q": "Are your prices fixed?",
+        "a": "Yes. Transfers, hourly hire and day trips are priced per vehicle from our rate table. The price you confirm on WhatsApp is the price you pay for the agreed service."
+      },
+      {
+        "q": "How do I pay?",
+        "a": "We accept bank transfer to our Kasikornbank account. Payment details are confirmed on WhatsApp or on your invoice when you book."
+      },
+      {
+        "q": "What happens if my booking runs over time?",
+        "a": "Additional hours are charged at the overtime rate shown in our rate table for your vehicle or service. Simply tell your chauffeur or message us if you need more time."
+      },
+      {
+        "q": "Can you invoice my company?",
+        "a": "Yes. We issue invoices to companies and organisations, which is common for corporate travel and delegations. Payment details are confirmed on WhatsApp."
+      }
+    ]
+  },
+  {
+    "group": "Airport & Fast-Track",
+    "items": [
+      {
+        "q": "Which airports do you serve?",
+        "a": "We provide transfers from and to Suvarnabhumi (BKK), Don Mueang (DMK) and U-Tapao (UTP), including direct transfers between Suvarnabhumi and Don Mueang."
+      },
+      {
+        "q": "Where will my chauffeur meet me?",
+        "a": "Your chauffeur meets you in the arrivals hall after you have collected your luggage. If you have booked fast-track at Suvarnabhumi, the fast-track team walks you through the terminal and hands you over to your chauffeur."
+      },
+      {
+        "q": "Can I book fast-track on its own?",
+        "a": "No. Fast-track and the VIP electric buggy at Suvarnabhumi are only available together with a SiamDrive car booking."
+      },
+      {
+        "q": "How many people can ride in a VIP buggy?",
+        "a": "Each buggy seats a maximum of two guests. Larger parties book one buggy for every two travellers, and children under three ride free."
+      },
+      {
+        "q": "What if my flight is delayed?",
+        "a": "Share your flight number when you book and your pickup will follow your actual arrival time. For major changes, such as a new flight, message us on WhatsApp and we will rearrange."
+      }
+    ]
+  },
+  {
+    "group": "Bodyguards & Security",
+    "items": [
+      {
+        "q": "Who are your bodyguards?",
+        "a": "Our bodyguards are suited, English-speaking, discreet security professionals. They accompany you in the car and on foot, staying alert without drawing attention."
+      },
+      {
+        "q": "Can I book a bodyguard without a car?",
+        "a": "No. Bodyguards are only bookable together with a SiamDrive car booking, so your chauffeur and bodyguard work from the same plan."
+      },
+      {
+        "q": "How long can I book a bodyguard for?",
+        "a": "For a single transfer, or for five or ten hours. Additional hours are charged at the overtime rate, and a supplement applies for assignments outside Bangkok."
+      },
+      {
+        "q": "What is a motorcycle escort?",
+        "a": "Motorcycle escort riders travel with your convoy, clearing the way ahead and keeping multiple vehicles together through Bangkok traffic. They are escort riders, not police."
+      },
+      {
+        "q": "Will my information be kept confidential?",
+        "a": "Yes. Details of your schedule, venues and party are shared only with the chauffeurs and security staff assigned to your booking."
+      }
+    ]
+  },
+  {
+    "group": "Vehicles",
+    "items": [
+      {
+        "q": "Which vehicles do you offer?",
+        "a": "Our fleet includes the Toyota Camry, Toyota Alphard 30, Toyota Alphard 40, Rowen Vellfire Z, Toyota Alphard 40 Executive Lounge and Porsche Cayenne S."
+      },
+      {
+        "q": "How many passengers and bags fit in each car?",
+        "a": "The Camry and Cayenne S seat up to three passengers with two large suitcases. The Alphard, Vellfire and Alphard Executive seat up to five with four large suitcases."
+      },
+      {
+        "q": "Which car should I choose for a family?",
+        "a": "The Alphard 30, Alphard 40 or Vellfire Z. Their sliding doors, captain's chairs and luggage space make them ideal for families arriving with children and suitcases."
+      },
+      {
+        "q": "Is every vehicle driven by a chauffeur?",
+        "a": "Yes. SiamDrive is a chauffeur service; all vehicles are driven by our professional drivers. Self-drive hire is not available."
+      },
+      {
+        "q": "What if my group does not fit in one vehicle?",
+        "a": "We can provide several vehicles travelling together, coordinated through one booking. For larger convoys, motorcycle escort riders can keep everyone together."
+      }
+    ]
+  },
+  {
+    "group": "Policies",
+    "items": [
+      {
+        "q": "What is your cancellation policy?",
+        "a": "Cancellation terms depend on the service and are confirmed with you at the time of booking, so you know exactly where you stand before you pay."
+      },
+      {
+        "q": "What is the scope of the personal assistant service?",
+        "a": "Our personal assistants provide strictly professional companionship and assistance: translation, errands, shopping, sightseeing support and nanny care. The service is booked as ten hours in Bangkok."
+      },
+      {
+        "q": "Are fuel and tolls included in monthly packages?",
+        "a": "No. Monthly packages include a private driver seven days a week, ten hours a day, with unlimited kilometres, but exclude fuel and tolls. How these are settled is agreed when you book."
+      },
+      {
+        "q": "What happens if I leave something in the car?",
+        "a": "Message us on WhatsApp straight away. Your chauffeur will check the vehicle and we will arrange to return any items found."
+      },
+      {
+        "q": "Is there an extra charge for overnight trips?",
+        "a": "When a chauffeur stays overnight away from Bangkok with you, an overnight supplement covers their accommodation. It is included in your quote before you confirm."
+      }
+    ]
+  }
+]

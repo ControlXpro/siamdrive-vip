@@ -1,0 +1,24 @@
+import { createRequire } from "node:module"; import path from "node:path";
+const require = createRequire(import.meta.url);
+const puppeteer = require(path.join(process.env.APPDATA, "npm/node_modules/hyperframes/node_modules/puppeteer-core"));
+const b = await puppeteer.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: "new" });
+const p = await b.newPage(); await p.setViewport({ width: 1440, height: 900 });
+const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+await p.goto("http://localhost:8790/book/?service=intercity&dest=hua-hin&vehicle=toyota-alphard-40-executive", { waitUntil: "networkidle2" });
+await new Promise((r) => setTimeout(r, 1500));
+const read = () => p.evaluate(() => ({ total: document.querySelector(".summary-total b").textContent, lines: [...document.querySelectorAll(".summary-lines div")].map((d) => d.innerText.replace(/\n/g, " = ")) }));
+console.log("prefill:", JSON.stringify(await read()));
+// switch to airport, BKK arrival, 4 guests, Fast-Track + buggy, 2 bodyguards 10h
+for (const s of ['[data-group=service][data-value=airport]','[data-group=airport][data-value=suvarnabhumi-bkk]','[data-group=direction][data-value=arrival]']) await p.evaluate((s) => document.querySelector(s).click(), s);
+await p.evaluate(() => { const d = document.querySelector('[data-bind=date]'); d.value = '2026-08-21'; d.dispatchEvent(new Event('input')); }); 
+for (let i = 0; i < 2; i++) await p.evaluate(() => document.querySelector('[data-key=pax] [data-d="1"]').click());
+await p.evaluate(() => { const c = document.querySelector("[data-bind=ft]"); c.click(); });
+for (let i = 0; i < 2; i++) await p.evaluate(() => document.querySelector('[data-key=guards] [data-d="1"]').click());
+await p.evaluate(() => document.querySelector('[data-group=guardPlan][data-value=h10]').click());
+await p.evaluate(() => document.querySelector('[data-bind=name]').value = "Test Guest");
+await new Promise((r) => setTimeout(r, 300));
+console.log("airport:", JSON.stringify(await read()));
+const wa = await p.$eval(".wa-send", (a) => decodeURIComponent(a.href));
+console.log("WA link:\n" + wa.slice(0, 700));
+console.log("errors:", errs);
+await b.close();
