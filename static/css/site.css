@@ -541,3 +541,21 @@ section{position:relative}
 .pkg-tag{position:absolute;top:18px;right:18px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:var(--bone);color:var(--ink);border-radius:999px;padding:6px 11px}
 @media (max-width:1100px){.duo{grid-template-columns:1fr}.pkgs,.pkgs.c4{grid-template-columns:1fr 1fr}}
 @media (max-width:720px){.pkgs,.pkgs.c4{grid-template-columns:1fr}}
+
+/* ---------- v2.2: mobile hardening ---------- */
+@media (max-width:1100px){
+  .hero-top,.sec-head,.statement-grid,.layout,.wiz{grid-template-columns:minmax(0,1fr)}
+  .layout>*,.wiz>*{min-width:0}
+}
+@media (max-width:720px){
+  .field input,.field select,.field textarea{font-size:16px}
+  .grain{animation:none;opacity:.035}
+  .gridlines{display:none}
+  .mbar{bottom:calc(10px + env(safe-area-inset-bottom));padding:7px}
+  .prose,.lists,.list-box{min-width:0;overflow-wrap:anywhere}
+  .table-scroll{margin-inline:-4px}
+  .rates{font-size:14px}.rates td,.rates th{padding:12px 10px}
+  .phero{padding-top:130px}
+  .crumbs{font-size:10px}
+}
+.layout>div,.prose{min-width:0}
