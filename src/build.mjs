@@ -71,7 +71,7 @@ const header = (url) => `
     <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span></button>
   </div>
   <div class="hdr-right">
-    <div class="status"><i class="dot"></i>Bangkok <span data-bkk-clock>--:--:--</span> · Concierge online</div>
+    <div class="status"><i class="dot"></i>Bangkok <span data-bkk-clock>--:--:--</span><span class="st-long"> · Concierge online</span></div>
     ${btn("/book/?service=hourly", "Book a driver", "btn-light btn-sm", I.cal, 'data-cursor="Book"')}
   </div>
 </div></header>

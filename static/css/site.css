@@ -563,3 +563,11 @@ section{position:relative}
 @media (max-width:720px){.preloader{display:none}}
 .table-scroll{position:relative}.rates th .sr{position:absolute;left:0;top:0}
 .light .linkgrid a small,.light .svc-list .n,.light .svc-list .p,.light .mono.muted,.light .duo-body .mono{color:var(--paper-mute)}.summary dl{min-height:190px}.summary-lines{min-height:46px}
+
+/* ---------- v2.4: header never wraps ---------- */
+.pill,.hdr-right,.brand,.nav-links{flex-shrink:0}
+.nav-links a,.brand b,.hdr .status,.hdr-right .btn{white-space:nowrap}
+.hdr .wrap{flex-wrap:nowrap}
+@media (max-width:1520px){.hdr .status .st-long{display:none}.hdr .status{padding:0 18px}}
+@media (max-width:1320px){.hdr .status{display:none}}
+@media (max-width:1240px){.nav-links{margin-left:2px}.nav-links a{padding:10px 11px;font-size:13.5px}.brand{padding-right:4px}}
