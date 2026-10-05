@@ -135,7 +135,7 @@ function layout({ url, title, desc, body, ld = [], image = "og.jpg", preload = "
 <meta name="twitter:image" content="${ogImg}">
 <link rel="icon" href="/assets/img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/img/mark.png">
-<link rel="stylesheet" href="/assets/css/site.css?v=${BUILD}">
+<style>${MINCSS}</style>
 ${preload}
 <script type="application/ld+json">${JSON.stringify(graph)}</script>
 </head>
@@ -158,6 +158,8 @@ ${book ? `<script src="/assets/js/book.js?v=${BUILD}" defer></script>` : ""}
 </html>`;
 }
 const BUILD = Date.now().toString(36);
+const MINCSS = (fs.readFileSync(path.join(ROOT, "static/fonts/fonts.css"), "utf8") + " " + fs.readFileSync(path.join(ROOT, "static/css/site.css"), "utf8"))
+  .replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").replace(/\s*([{};:,>])\s*/g, "$1").replace(/;}/g, "}").trim();
 
 /* ------------------------------------------------------------------ partials */
 const crumbs = (trail) => `<nav class="crumbs" aria-label="Breadcrumb">${trail.map(([t, h], i) => i === trail.length - 1 ? `<span aria-current="page" style="opacity:1">${esc(t)}</span>` : `<a href="${h}">${esc(t)}</a><span>/</span>`).join("")}</nav>`;
