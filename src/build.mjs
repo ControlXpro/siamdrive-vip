@@ -135,7 +135,7 @@ function layout({ url, title, desc, body, ld = [], image = "og.jpg", preload = "
 <meta name="twitter:image" content="${ogImg}">
 <link rel="icon" href="/assets/img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/img/mark.png">
-<style>${MINCSS}</style>
+<link rel="stylesheet" href="/assets/css/site.css?v=${BUILD}">
 ${preload}
 <script type="application/ld+json">${JSON.stringify(graph)}</script>
 </head>
