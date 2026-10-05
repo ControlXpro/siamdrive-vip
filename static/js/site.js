@@ -166,7 +166,12 @@
       const base = q.hours === "10" ? v.price.bkk10 : v.price.bkk5;
       let price = base, label = `Private driver · ${q.hours} hours`, href = { service: "hourly", hours: q.hours, vehicle: v.slug };
       if (q.mode === "guards") { price = base + q.guards * (q.hours === "10" ? P.bodyguard.h10 : P.bodyguard.h5); label = `Driver + ${q.guards} bodyguard${q.guards > 1 ? "s" : ""} · ${q.hours} hours`; href = { service: "protection", hours: q.hours, guards: q.guards, vehicle: v.slug }; }
-      if (q.mode === "airport") { price = v.price.airport; label = "Airport transfer · one way"; href = { service: "airport", vehicle: v.slug }; }
+      if (q.mode === "airport") {
+        const ft = $(".qb-ftbox", qb).checked;
+        price = v.price.airport + (ft ? 2 * P.fasttrack.arrival + P.fasttrack.buggy : 0);
+        label = ft ? "Airport + Fast-Track · 2 guests" : "Airport transfer · one way";
+        href = { service: "airport", vehicle: v.slug, ...(ft ? { airport: "suvarnabhumi-bkk", direction: "arrival", ft: 1, pax: 2 } : {}) };
+      }
       $(".qb-price b", qb).textContent = fmt(price);
       $(".qb-price small", qb).textContent = label + " · " + v.name;
       $(".qb-go", qb).href = "/book/?" + new URLSearchParams(href).toString();
@@ -174,6 +179,7 @@
     $$("[data-qb]", qb).forEach((b) => b.addEventListener("click", () => { q[b.dataset.qb] = b.dataset.v; calc(); }));
     $$("[data-qb-step]", qb).forEach((b) => b.addEventListener("click", () => { q.guards = Math.max(1, Math.min(8, q.guards + +b.dataset.qbStep)); calc(); }));
     car.addEventListener("change", calc);
+    $(".qb-ftbox", qb)?.addEventListener("change", calc);
     calc();
   }
 

@@ -673,3 +673,8 @@ section{position:relative}
 .qb-price small{font-family:var(--sans);font-size:12.5px;letter-spacing:0;text-transform:none;color:var(--bone-2);margin-top:6px}
 @media (max-width:420px){.qb-pills{grid-template-columns:1fr 1fr}.qb-pills button:nth-child(2){grid-column:1/-1;order:3}}
 .qc-copy{min-height:44px;padding:10px 4px;display:inline-flex;align-items:center}
+.choices{grid-template-columns:repeat(2,1fr)}
+.toggle-hl{border-color:var(--bone-2)}
+.qc-info{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:16px 18px;border-radius:16px;border:1px dashed var(--line-2);color:var(--bone-2);font-size:14.5px;margin-bottom:12px}
+@media (max-width:720px){.choices{grid-template-columns:1fr}}
+.qb-ft{cursor:pointer;align-items:center}.qb-ft small{color:var(--mute);font-size:12px}.qb-ft input{width:22px;height:22px;accent-color:#eeeae3;flex:0 0 22px}

@@ -38,7 +38,7 @@ export function buildHome(ctx) {
           <button type="button" data-qb="hours" data-v="10" aria-pressed="true">Full day <small>10 hrs</small></button>
         </div>
         <div class="qb-step" data-when="guards" hidden><span>Bodyguards</span><div class="stepper-ctl"><button type="button" data-qb-step="-1" aria-label="Fewer bodyguards">−</button><output class="qb-g">2</output><button type="button" data-qb-step="1" aria-label="More bodyguards">+</button></div></div>
-        <div class="qb-step" data-when="airport" hidden><span>Airport</span><b>Suvarnabhumi or Don Mueang</b></div>
+        <label class="qb-step qb-ft" data-when="airport" hidden><span><b>Add Fast-Track &amp; VIP buggy</b><br><small>Suvarnabhumi arrival · price for 2 guests</small></span><input type="checkbox" class="qb-ftbox" checked></label>
         <div class="field full qb-car"><label for="qb-v">Car</label><select id="qb-v" name="vehicle">${D.VEHICLES.map((v) => `<option value="${v.slug}"${v.slug === "toyota-alphard-40" ? " selected" : ""}>${v.name} · ${v.seats} seats</option>`).join("")}</select></div>
         <div class="qb-foot"><div class="qb-price"><b>—</b><small>Private driver · 10 hours</small></div><a class="btn btn-light btn-sm qb-go" href="/book/" data-cursor="Book"><span class="ic">${I.arrow}</span>Book this</a></div>
         <p class="qb-note">No payment now · driver, fuel &amp; tolls included · confirmed on WhatsApp</p>

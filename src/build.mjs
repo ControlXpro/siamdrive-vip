@@ -389,7 +389,7 @@ ${phero({ trail, kicker: c.kicker || "Service", h1: esc(c.h1 || s.name), lead: c
     ${c.process ? `<div class="steps" style="margin:50px 0">${c.process.map((p, i) => `<div class="step"><span class="n">0${i + 1}</span><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p></div>`).join("")}</div>` : ""}
     <h2 class="h3" style="margin:40px 0 18px">Rates</h2>${table}
   </div>
-  ${aside({ title: s.name, price: SVC_FROM[s.slug] === undefined ? from : SVC_FROM[s.slug], q: { "airport-transfers": "service=airport", "hourly-chauffeur": "service=hourly", "city-to-city-transfers": "service=intercity", "day-trips": "service=intercity", "monthly-chauffeur": "service=monthly" }[s.slug] || "", msg: `Hello SiamDrive, I'd like to book: ${s.name}` })}
+  ${aside({ title: s.name, price: SVC_FROM[s.slug] === undefined ? from : SVC_FROM[s.slug], q: { "airport-transfers": "service=airport", "hourly-chauffeur": "service=hourly", "city-to-city-transfers": "service=intercity", "day-trips": "service=intercity", "monthly-chauffeur": "service=monthly", "airport-fast-track": "service=airport&airport=suvarnabhumi-bkk&ft=1", "airport-transfers": "service=airport" }[s.slug] || "", msg: `Hello SiamDrive, I'd like to book: ${s.name}` })}
 </div></section>
 <section class="sec-sm"><div class="wrap"><div class="sec-head"><h2 class="h2">Pairs well <em>with</em></h2></div><div class="cards">${related.map((o) => imgCard({ href: `/services/${o.slug}/`, img: pick(o.slug, o.img), mono: "Service", title: o.name, text: (by(C.services, o.slug).intro || "").split(". ")[0] + ".", foot: "Explore" })).join("")}</div></div></section>
 ${faqBlock(c.faqs)}${ctaBand(undefined, undefined, video || "home")}`;

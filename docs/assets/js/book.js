@@ -50,9 +50,10 @@
     const v = veh(), n = nCars(v), L = [[`${carLabel()} — ${n > 1 ? n + " × " : ""}${v.name}`, carPrice(v)]];
     if (S.service === "protection" && S.guards > 0) L.push([`Bodyguards × ${S.guards} (${S.hours} hours)`, S.guards * (S.hours === "10" ? P.bodyguard.h10 : P.bodyguard.h5)]);
     if (S.service === "protection" && S.escort) L.push([`Motorcycle escort (${S.hours} hours)`, S.hours === "10" ? P.bodyguard.escort10 : P.bodyguard.escort5]);
-    if (isBKK() && S.guards > 0) L.push([`Bodyguards × ${S.guards} (airport transfer)`, S.guards * P.bodyguard.transfer]);
-    if (isBKK() && S.ft) {
-      if (S.direction === "arrival") {
+    if (S.service === "airport" && S.guards > 0) L.push([`Bodyguards × ${S.guards} (airport transfer)`, S.guards * P.bodyguard.transfer]);
+    const ftOn = S.ft && (isBKK() || S.service === "hourly" || S.service === "protection");
+    if (ftOn) {
+      if (S.service !== "airport" || S.direction === "arrival") {
         L.push([`Fast-Track arrival × ${S.pax} guests`, S.pax * P.fasttrack.arrival]);
         const n = Math.ceil(S.pax / 2); L.push([`Electric buggy × ${n}`, n * P.fasttrack.buggy]);
       } else L.push([`Fast-Track departure × ${S.pax} guests`, S.pax * P.fasttrack.departure]);
@@ -69,6 +70,7 @@
     if (S.service === "hourly" || S.service === "protection") rows.push(`• Duration: ${S.hours} hours`);
     if (S.service === "airport") rows.push(`• Airport: ${ap().name} (${ap().code}) — ${S.direction === "arrival" ? "arrival pick-up" : "departure drop-off"}${S.flight ? " · Flight " + S.flight : ""}`);
     if (S.service === "intercity" && route()) rows.push(`• Destination: ${route().name} (${S.trip === "day" ? "day trip, return" : "one way"})`);
+    if (lines().some((l) => /Fast-Track/.test(l[0]))) rows.push("• Add-on: Suvarnabhumi Fast-Track & VIP buggy");
     rows.push(`• Date & time: ${S.date || "TBC"}${S.time ? " " + S.time : ""}`);
     if (S.pickup) rows.push(`• Pick-up: ${S.pickup}`);
     rows.push(`• Vehicle: ${nCars(v) > 1 ? nCars(v) + " × " : ""}${v.name}`, `• Guests: ${S.pax}`, "", "Quote:");
@@ -83,7 +85,10 @@
   const render = () => {
     $$("[data-group]", root.parentNode).forEach((b) => b.setAttribute("aria-pressed", String(S[b.dataset.group]) === b.dataset.value));
     $$("[data-show]", root).forEach((el) => (el.hidden = !shows(el.dataset.show)));
-    $$("[data-dir]", root).forEach((el) => (el.hidden = el.dataset.dir !== S.direction));
+    $$("[data-dir]", root).forEach((el) => (el.hidden = S.service === "airport" && el.dataset.dir !== S.direction));
+    $$("[data-only]", root).forEach((el) => (el.hidden = (el.dataset.only === "bkk") !== (S.airport === "suvarnabhumi-bkk")));
+    const fp = $("[data-preset=fasttrack]", root); if (fp) { const ftSel = S.service === "airport" && S.ft && isBKK(); fp.setAttribute("aria-pressed", String(ftSel)); const ab = $("[data-group=service][data-value=airport]", root); if (ab && ftSel) ab.setAttribute("aria-pressed", "false"); }
+    $$("select[data-bind]", root).forEach((i) => (i.value = S[i.dataset.bind]));
     $$(".stepper", root).forEach((st) => ($("output", st).textContent = S[st.dataset.key]));
     $$("input[type=checkbox][data-bind]", root).forEach((i) => (i.checked = !!S[i.dataset.bind]));
     // keep a valid vehicle
@@ -121,6 +126,8 @@
     }
     update();
   }));
+  $("[data-preset=fasttrack]", root)?.addEventListener("click", () => { S.service = "airport"; S.airport = "suvarnabhumi-bkk"; S.direction = "arrival"; S.ft = true; S.guards = 0; S.escort = false; update(); });
+  $("[data-switch-bkk]", root)?.addEventListener("click", () => { S.airport = "suvarnabhumi-bkk"; S.ft = true; update(); });
   $$(".stepper", root).forEach((st) => $$("button", st).forEach((b) => b.addEventListener("click", () => {
     const k = st.dataset.key, min = +st.dataset.min, max = +st.dataset.max;
     S[k] = Math.max(min, Math.min(max, S[k] + +b.dataset.d)); update();
