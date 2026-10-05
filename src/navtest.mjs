@@ -5,7 +5,7 @@ const b = await puppeteer.launch({ executablePath: "C:/Program Files/Google/Chro
 const OUT = "C:/Users/LENOVO/AppData/Local/Temp/claude/C--Users-LENOVO/efc2f6be-b453-49de-af1d-c24e2234d32a/scratchpad/qa/";
 for (const w of [1024, 1101, 1180, 1280, 1366, 1440, 1536, 1600, 1920]) {
   const p = await b.newPage(); await p.setViewport({ width: w, height: 800 });
-  await p.goto("http://localhost:8790/private-driver/", { waitUntil: "networkidle2" }); await new Promise((r) => setTimeout(r, 1800));
+  await p.goto("https://siamdrive.vip/private-driver/", { waitUntil: "networkidle2" }); await new Promise((r) => setTimeout(r, 1800));
   const r = await p.evaluate(() => {
     const links = [...document.querySelectorAll(".nav-links a")].filter((a) => a.offsetParent);
     const wrapped = links.filter((a) => a.getBoundingClientRect().height > 46).map((a) => a.textContent);

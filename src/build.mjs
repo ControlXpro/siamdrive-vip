@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import * as D from "./data.mjs";
 import { buildHome } from "./home.mjs";
 import { buildPillars } from "./pillars.mjs";
+import { buildBook } from "./book.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "docs");
@@ -139,7 +140,7 @@ function layout({ url, title, desc, body, ld = [], image = "og.jpg", preload = "
 ${preload}
 <script type="application/ld+json">${JSON.stringify(graph)}</script>
 </head>
-<body>
+<body${book ? ' class="is-book"' : ""}>
 ${home ? `<div class="preloader" aria-hidden="true"><div class="pl-inner"><span class="pl-word">SiamDrive.vip</span><i class="pl-ring"></i><i class="pl-ring r2"></i><img src="/assets/img/mark-white.png" alt="" width="120" height="120"><span class="pl-count">000 %</span></div></div>` : ""}
 <div class="grain" aria-hidden="true"></div>
 <div class="gridlines" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -308,58 +309,7 @@ const ctx = { D, C, S, I, IMG, thb, minFor, btn, bookBtn, waBtn, pick, by, esc, 
 buildHome(ctx);
 
 // ---------- BOOK
-(() => {
-  const opt = (g, v, b, s, extra = "") => `<button type="button" class="opt" data-group="${g}" data-value="${v}" aria-pressed="false" ${extra}><b>${b}</b><small>${s}</small></button>`;
-  const counter = (key, label, min, max) => `<div class="field"><label>${label}</label><div class="counter" data-key="${key}" data-min="${min}" data-max="${max}"><button type="button" data-d="-1" aria-label="Less">−</button><output>0</output><button type="button" data-d="1" aria-label="More">+</button></div></div>`;
-  const body = `
-${phero({ trail: [["Home", "/"], ["Book", "/book/"]], kicker: "Private driver · Bodyguards · Instant estimate", h1: "Book your <em>private driver.</em>", lead: "Five quick steps — add bodyguards if you need them. Your price updates live, and a real person confirms on WhatsApp, usually within minutes." })}
-<section class="sec-sm" style="padding-top:20px"><div class="wrap">
-<div class="wiz">
-  <div>
-    <div class="wiz-steps">${["Service", "Trip", "Vehicle", "Extras", "Details"].map((t, i) => `<button type="button" data-go="${i + 1}"${i === 0 ? ' class="on"' : ""}><b>${i + 1}</b>${t}</button>`).join("")}</div>
-    <div class="wiz-panel on" data-step="1"><h2>What do you need?</h2><p>Start with your driver — bodyguards, Fast-Track and assistants can be added in step 4.</p>
-      <div class="opts c2">${opt("service", "hourly", "Private driver", "Chauffeur &amp; car for 5 or 10 hours — the driver stays with you")}${opt("service", "protection", "Driver + bodyguards", "Private driver with a suited, English-speaking protection detail")}${opt("service", "monthly", "Monthly private driver", "Same chauffeur, 7 days a week · 10 hrs daily")}${opt("service", "airport", "Airport transfer", "BKK, DMK or U-Tapao — meet &amp; greet, Fast-Track")}${opt("service", "intercity", "Out of town", "Transfers and day trips to " + D.ROUTES.length + " destinations")}</div></div>
-    <div class="wiz-panel" data-step="2"><h2>Your trip</h2><p>Where and when. Exact addresses can be confirmed later on WhatsApp.</p>
-      <div data-for="airport" style="margin-bottom:12px"><div class="opts">${D.AIRPORTS.map((a) => opt("airport", a.slug, a.code + " · " + a.short, a.code === "UTP" ? "Pattaya / Rayong region" : "Bangkok")).join("")}</div>
-        <div class="opts c2" style="margin-top:10px">${opt("direction", "arrival", "Arrival", "Pick-up from the airport")}${opt("direction", "departure", "Departure", "Drop-off at the airport")}</div></div>
-      <div data-for="hourly protection" style="margin-bottom:12px"><div class="opts c2">${opt("hours", "5", "Half day · 5 hours", "Meetings, shopping, dinner")}${opt("hours", "10", "Full day · 10 hours", "A full day at your disposal")}</div></div>
-      <div data-for="intercity" style="margin-bottom:12px"><div class="field" style="margin-bottom:10px"><label>Destination</label><select data-bind="dest">${D.ROUTES.map((r) => `<option value="${r.slug}">${esc(r.name)} · ${r.km} km</option>`).join("")}</select></div>
-        <div class="opts c2">${opt("trip", "transfer", "One-way transfer", "Drop-off at your destination")}${opt("trip", "day", "Day trip · 10 hrs", "Car and chauffeur on standby, return to Bangkok")}</div></div>
-      <div class="wiz-form">
-        <div class="field"><label>Date</label><input type="date" data-bind="date" required></div>
-        <div class="field"><label>Time</label><input type="time" data-bind="time"></div>
-        <div class="field" data-for="airport"><label>Flight number</label><input type="text" data-bind="flight" placeholder="e.g. TG 917"></div>
-        <div class="field"><label>Pick-up</label><input type="text" data-bind="pickup" placeholder="Hotel, address or terminal"></div>
-        <div class="field"><label>Drop-off</label><input type="text" data-bind="dropoff" placeholder="Hotel, address or terminal"></div>
-        ${counter("pax", "Guests", 1, 12)}${counter("bags", "Large bags", 0, 12)}
-      </div></div>
-    <div class="wiz-panel" data-step="3"><h2>Choose your vehicle</h2><p>Prices reflect your trip. Vehicles too small for your party are greyed out.</p><div class="opts c2 veh-opts"></div></div>
-    <div class="wiz-panel" data-step="4"><h2>Extras</h2><p>Everything is coordinated with your chauffeur. Skip anything you don't need.</p>
-      <div class="addon"><div><b>Bodyguards</b><small>${thb(D.BODYGUARD.h5)} per guard (transfer / 5 hrs) · ${thb(D.BODYGUARD.h10)} (10 hrs)</small></div><div class="counter" data-key="guards" data-min="0" data-max="8"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
-      <div class="opts" style="margin-bottom:10px">${opt("guardPlan", "transfer", "Guards: transfer", "Point to point")}${opt("guardPlan", "h5", "Guards: 5 hours", "Half day")}${opt("guardPlan", "h10", "Guards: 10 hours", "Full day")}</div>
-      <div class="opts" style="margin-bottom:10px">${opt("escort", "none", "No escort", "—")}${opt("escort", "e5", "Motorcycle escort", "Transfer / 5 hours")}${opt("escort", "e10", "Motorcycle escort", "10 hours")}</div>
-      <div data-ft><div class="addon"><div><b>Suvarnabhumi Fast-Track</b><small data-dir="arrival">Priority immigration ${thb(D.FASTTRACK.arrival)} / guest · private buggy ${thb(D.FASTTRACK.buggy)} (max 2 guests each)</small><small data-dir="departure">Priority departure with butler escort ${thb(D.FASTTRACK.departure)} / guest</small></div><input type="checkbox" data-bind="ft" aria-label="Add Fast-Track" style="width:22px;height:22px;accent-color:#eeeae3"></div>
-        <div class="addon" data-dir="arrival"><div><b>Include electric buggy</b><small>From the aircraft door · buggies allocated automatically</small></div><input type="checkbox" data-bind="buggy" aria-label="Include buggy" style="width:22px;height:22px;accent-color:#eeeae3"></div>
-        <div class="addon"><div><b>Fast-Track guests</b><small>Usually everyone in your party</small></div><div class="counter" data-key="ftPax" data-min="1" data-max="12"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div></div>
-      <div class="addon"><div><b>Personal assistant</b><small>Travel companion or nanny · ${thb(D.PA.h10)} per 10-hour day</small></div><div class="counter" data-key="pa" data-min="0" data-max="4"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
-      <div class="addon"><div><b>Extra hours</b><small>Billed at the vehicle's overtime rate</small></div><div class="counter" data-key="extraHours" data-min="0" data-max="12"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
-      <div class="addon" data-for="intercity"><div><b>Overnight stays</b><small>Chauffeur &amp; car stay with you · ${thb(D.OVERNIGHT)} per night</small></div><div class="counter" data-key="nights" data-min="0" data-max="14"><button type="button" data-d="-1">−</button><output>0</output><button type="button" data-d="1">+</button></div></div>
-    </div>
-    <div class="wiz-panel" data-step="5"><h2>Almost there</h2><p>Who should our concierge confirm with? Then send your booking on WhatsApp.</p>
-      <div class="wiz-form"><div class="field"><label>Full name</label><input type="text" data-bind="name" autocomplete="name"></div><div class="field"><label>Phone / WhatsApp</label><input type="tel" data-bind="phone" autocomplete="tel"></div>
-      <div class="field full"><label>Email (optional)</label><input type="email" data-bind="email" autocomplete="email"></div><div class="field full"><label>Notes</label><textarea data-bind="notes" rows="3" placeholder="Child seats, names on sign, special requests…"></textarea></div></div></div>
-    <div class="wiz-nav"><button type="button" class="btn btn-ghost btn-sm wiz-back"><span class="ic" style="transform:rotate(180deg)">${I.arrow}</span>Back</button><button type="button" class="btn btn-light btn-sm wiz-next"><span class="ic">${I.arrow}</span>Continue</button></div>
-  </div>
-  <aside class="summary" aria-live="polite">
-    <div class="summary-head"><span class="eyebrow">Your booking</span><span class="mono muted"><i class="dot" style="display:inline-block;margin-right:6px"></i>Live</span></div>
-    <dl></dl><div class="summary-lines"></div>
-    <div class="summary-total"><span class="mono muted">Estimated total</span><b>—</b></div>
-    <div class="summary-cta"><a class="btn btn-wa wa-send" href="#" target="_blank" rel="noopener" data-cursor="Send"><span class="ic">${I.wa}</span>Confirm on WhatsApp</a><button type="button" class="btn btn-ghost btn-sm wa-copy"><span class="ic">${I.arrow}</span><span class="lbl">Copy booking details</span></button></div>
-    <p class="note">Estimate based on our published rates. Your fixed price is confirmed by the concierge before anything is charged.</p>
-  </aside>
-</div></div></section>`;
-  emit("/book/", layout({ url: "/book/", book: true, title: "Book a Private Driver or Bodyguards in Bangkok", desc: "Book a private driver in Bangkok by the hour, day or month and add suited bodyguards. Live price estimate, confirmed by our 24/7 WhatsApp concierge in minutes.", body, ld: [crumbLd([["Home", "/"], ["Book", "/book/"]])] }), 0.95);
-})();
+buildBook(ctx);
 
 // ---------- FLEET
 (() => {

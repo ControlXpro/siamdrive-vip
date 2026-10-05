@@ -1,138 +1,139 @@
-/* SIAMDRIVE.VIP — booking wizard. Prices come from window.SD (generated from src/data.mjs). */
+/* SIAMDRIVE.VIP — single-page instant quote calculator. Prices from window.SD (generated from src/data.mjs). */
 (() => {
   const P = window.SD; if (!P) return;
   const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const fmt = (n) => n.toLocaleString("en-US") + " THB";
-  const root = $(".wiz"); if (!root) return;
+  const root = $(".qc"); if (!root) return;
+
+  /* ---------- state ---------- */
+  const S = {
+    service: "hourly", hours: "10", airport: "suvarnabhumi-bkk", direction: "arrival", dest: "pattaya", trip: "transfer",
+    pax: 2, vehicle: "toyota-alphard-40", guards: 0, escort: false, ft: false,
+    date: "", time: "", pickup: "", flight: "", name: "", notes: "",
+  };
+  try { Object.assign(S, JSON.parse(localStorage.getItem("sd-quote") || "{}")); } catch {}
   const url = new URLSearchParams(location.search);
-  const saved = (() => { try { return JSON.parse(localStorage.getItem("sd-booking") || "{}"); } catch { return {}; } })();
+  ["service", "hours", "airport", "direction", "dest", "trip", "vehicle", "date"].forEach((k) => url.get(k) && (S[k] = url.get(k)));
+  ["guards", "pax"].forEach((k) => url.get(k) && (S[k] = +url.get(k)));
+  if (url.get("escort")) S.escort = url.get("escort") !== "none";
+  if (url.get("ft")) S.ft = url.get("ft") === "1";
+  if (url.get("service") === "protection" && !url.get("guards") && S.guards < 1) S.guards = 2;
+  if (!["5", "10"].includes(S.hours)) S.hours = "10";
+  const save = () => { try { localStorage.setItem("sd-quote", JSON.stringify(S)); } catch {} };
 
-  const S = Object.assign({
-    service: "hourly", airport: "suvarnabhumi-bkk", direction: "arrival", flight: "", date: "", time: "",
-    pickup: "", dropoff: "", hours: "10", dest: "pattaya", trip: "transfer", pax: 2, bags: 2,
-    vehicle: "toyota-alphard-40", guards: 0, guardPlan: "h5", escort: "none", ft: false, ftPax: 2, buggy: true,
-    pa: 0, extraHours: 0, nights: 0, name: "", phone: "", email: "", notes: "",
-  }, saved);
-  ["service", "vehicle", "dest", "hours", "date", "guardPlan", "escort"].forEach((k) => url.get(k) && (S[k] = url.get(k)));
-  if (url.get("guards")) S.guards = +url.get("guards");
-  const syncGuards = () => { if (S.service === "protection") { if (S.guards < 1) S.guards = 2; if (S.guardPlan !== "transfer") S.guardPlan = S.hours === "10" ? "h10" : "h5"; } };
-  syncGuards();
-  if (S.service === "intercity" && url.get("dest")) S.dest = url.get("dest");
-
-  let step = 1; const steps = 5;
-  const veh = () => P.vehicles.find((v) => v.slug === S.vehicle) || P.vehicles[2];
+  const veh = (slug = S.vehicle) => P.vehicles.find((v) => v.slug === slug) || P.vehicles[2];
   const route = () => P.routes.find((r) => r.slug === S.dest);
-  const airport = () => P.airports.find((a) => a.slug === S.airport);
-  const seatsOf = (v) => v.seats.split("+").map(Number)[0];
+  const ap = () => P.airports.find((a) => a.slug === S.airport) || P.airports[0];
+  const seats = (v) => +v.seats.split("+")[0];
+  const isBKK = () => S.service === "airport" && S.airport === "suvarnabhumi-bkk";
+  const monthlyOf = (v) => (P.monthly.find((m) => m.vehicle === v.name) || {}).price;
 
-  /* ----- price engine ----- */
-  const basePrice = (v) => {
-    if (S.service === "airport") return S.airport === "u-tapao-utp" ? v.price.pattaya : v.price.airport;
-    if (S.service === "hourly" || S.service === "protection") return S.hours === "10" ? v.price.bkk10 : v.price.bkk5;
-    if (S.service === "intercity") { const r = route(); const t = r && P.tiers[r.tier]; if (!t || !t[S.trip === "day" ? "day" : "transfer"]) return null; return v.price[t[S.trip === "day" ? "day" : "transfer"]]; }
-    if (S.service === "monthly") { const m = P.monthly.find((x) => x.vehicle === v.name); return m ? m.price : null; }
+  /* ---------- pricing ---------- */
+  const nCars = (v) => Math.max(1, Math.ceil(S.pax / seats(v)));
+  const carPrice = (v) => { const one = unitPrice(v); return one == null ? null : one * nCars(v); };
+  const unitPrice = (v) => {
+    switch (S.service) {
+      case "hourly": case "protection": return S.hours === "10" ? v.price.bkk10 : v.price.bkk5;
+      case "airport": return S.airport === "u-tapao-utp" ? v.price.pattaya : v.price.airport;
+      case "intercity": { const r = route(), t = r && P.tiers[r.tier]; const col = t && t[S.trip === "day" ? "day" : "transfer"]; return col ? v.price[col] : null; }
+      case "monthly": return monthlyOf(v) || null;
+    }
     return null;
   };
+  const carLabel = () => ({
+    hourly: `Private driver · ${S.hours} hours`, protection: `Private driver · ${S.hours} hours`,
+    airport: `Airport ${S.direction === "arrival" ? "pick-up" : "drop-off"} · ${ap().short}`,
+    intercity: route() ? `${S.trip === "day" ? "Day trip" : "Transfer"} · ${route().name}` : "Out of town",
+    monthly: "Monthly private driver",
+  })[S.service];
   const lines = () => {
-    const v = veh(), L = [], b = basePrice(v);
-    const svcLabel = { airport: S.direction === "arrival" ? "Airport pick-up" : "Airport drop-off", hourly: `Private driver · ${S.hours} hours`, protection: `Private driver · ${S.hours} hours`, intercity: route() ? `${S.trip === "day" ? "Day trip" : "Transfer"} · ${route().name}` : "Out of town", monthly: "Monthly private driver" }[S.service];
-    L.push([`${svcLabel} — ${v.name}`, b]);
-    if (S.extraHours > 0 && S.service !== "monthly") L.push([`Extra time × ${S.extraHours} h`, v.price.overtime * S.extraHours]);
-    if (S.nights > 0 && S.service === "intercity") L.push([`Overnight outside Bangkok × ${S.nights}`, P.overnight * S.nights]);
-    if (S.guards > 0) {
-      const per = { transfer: P.bodyguard.transfer, h5: P.bodyguard.h5, h10: P.bodyguard.h10 }[S.guardPlan];
-      L.push([`Bodyguards × ${S.guards} (${{ transfer: "transfer", h5: "5 hours", h10: "10 hours" }[S.guardPlan]})`, per * S.guards]);
-      if (S.service === "intercity") L.push([`Outside Bangkok supplement × ${S.guards}`, P.bodyguard.outside * S.guards]);
-    }
-    if (S.escort !== "none") L.push([`Motorcycle escort (${S.escort === "e10" ? "10 hours" : "transfer / 5 hours"})`, S.escort === "e10" ? P.bodyguard.escort10 : P.bodyguard.escort5]);
-    if (ftAvailable() && S.ft) {
+    const v = veh(), n = nCars(v), L = [[`${carLabel()} — ${n > 1 ? n + " × " : ""}${v.name}`, carPrice(v)]];
+    if (S.service === "protection" && S.guards > 0) L.push([`Bodyguards × ${S.guards} (${S.hours} hours)`, S.guards * (S.hours === "10" ? P.bodyguard.h10 : P.bodyguard.h5)]);
+    if (S.service === "protection" && S.escort) L.push([`Motorcycle escort (${S.hours} hours)`, S.hours === "10" ? P.bodyguard.escort10 : P.bodyguard.escort5]);
+    if (isBKK() && S.guards > 0) L.push([`Bodyguards × ${S.guards} (airport transfer)`, S.guards * P.bodyguard.transfer]);
+    if (isBKK() && S.ft) {
       if (S.direction === "arrival") {
-        L.push([`Fast-Track arrival × ${S.ftPax} guests`, P.fasttrack.arrival * S.ftPax]);
-        if (S.buggy) { const n = Math.ceil(S.ftPax / 2); L.push([`Electric buggy × ${n} (max 2 guests each)`, P.fasttrack.buggy * n]); }
-      } else L.push([`Fast-Track departure × ${S.ftPax} guests`, P.fasttrack.departure * S.ftPax]);
+        L.push([`Fast-Track arrival × ${S.pax} guests`, S.pax * P.fasttrack.arrival]);
+        const n = Math.ceil(S.pax / 2); L.push([`Electric buggy × ${n}`, n * P.fasttrack.buggy]);
+      } else L.push([`Fast-Track departure × ${S.pax} guests`, S.pax * P.fasttrack.departure]);
     }
-    if (S.pa > 0) L.push([`Personal assistant × ${S.pa} (10 hours)`, P.pa.h10 * S.pa]);
     return L;
   };
-  const ftAvailable = () => S.service === "airport" && S.airport === "suvarnabhumi-bkk";
   const total = () => { const L = lines(); return L.some((l) => l[1] == null) ? null : L.reduce((a, l) => a + l[1], 0); };
 
-  /* ----- render helpers ----- */
-  const press = (group, val) => $$(`[data-group="${group}"]`, root).forEach((b) => b.setAttribute("aria-pressed", b.dataset.value === String(val)));
-  const show = () => {
-    $$(".wiz-panel", root).forEach((p) => p.classList.toggle("on", +p.dataset.step === step));
-    $$(".wiz-steps button", root).forEach((b) => { const n = +b.dataset.go; b.classList.toggle("on", n === step); b.classList.toggle("done", n < step); });
-    $(".wiz-back", root).style.visibility = step === 1 ? "hidden" : "visible";
-    const next = $(".wiz-next", root); next.hidden = step === steps;
-    $$("[data-for]", root).forEach((el) => (el.hidden = !el.dataset.for.split(" ").includes(S.service)));
-    $$("[data-ft]", root).forEach((el) => (el.hidden = !ftAvailable()));
-    $$("[data-dir]", root).forEach((el) => (el.hidden = el.dataset.dir !== S.direction));
-    renderVehicles(); renderSummary();
-    const top = root.getBoundingClientRect().top + scrollY - 120;
-    if (scrollY > top) scrollTo({ top, behavior: "smooth" });
-  };
-  const renderVehicles = () => {
-    const box = $(".veh-opts", root); if (!box) return;
-    box.innerHTML = P.vehicles.map((v) => {
-      const p = (() => { const keep = S.vehicle; S.vehicle = v.slug; const x = basePrice(v); S.vehicle = keep; return x; })();
-      const fits = seatsOf(v) >= S.pax;
-      return `<button type="button" class="opt car" data-group="vehicle" data-value="${v.slug}" aria-pressed="${v.slug === S.vehicle}" ${fits ? "" : "disabled style=\"opacity:.35\""}>
-        <img src="/assets/img/${v.img}.webp" alt="${v.name}" loading="lazy" width="900" height="600">
-        <span class="in"><b>${v.name}</b><small>${v.cls} · ${v.seats} seats · ${v.luggage} large bags${fits ? "" : " · too small for your party"}</small><span class="pp">${p ? fmt(p) : "Quote on request"}</span></span></button>`;
-    }).join("");
-    $$("[data-group=vehicle]", box).forEach((b) => b.addEventListener("click", () => { S.vehicle = b.dataset.value; save(); press("vehicle", S.vehicle); renderSummary(); }));
-  };
-  const renderSummary = () => {
-    const v = veh(), L = lines(), T = total();
-    const where = S.service === "airport" ? `${airport().short} (${airport().code}) · ${S.direction === "arrival" ? "pick-up" : "drop-off"}` : S.service === "intercity" ? `Bangkok → ${route() ? route().name : ""}` : S.service === "hourly" ? "Private driver, Bangkok" : S.service === "protection" ? "Driver + bodyguards, Bangkok" : "Bangkok, monthly";
-    $(".summary dl", root).innerHTML = [["Service", where], ["Date", S.date || "—"], ["Time", S.time || "—"], ["Vehicle", v.name], ["Guests", `${S.pax} · ${S.bags} bags`]].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
-    $(".summary-lines", root).innerHTML = L.map(([a, b]) => `<div><span>${a}</span><span>${b == null ? "On request" : fmt(b)}</span></div>`).join("");
-    $(".summary-total b", root).textContent = T == null ? "On request" : fmt(T);
-    $(".wa-send", root).href = "https://wa.me/" + P.whatsapp + "?text=" + encodeURIComponent(message());
-  };
+  /* ---------- message ---------- */
   const message = () => {
     const v = veh(), L = lines(), T = total();
-    const rows = [
-      "Hello SiamDrive, I would like to book:", "",
-      `• Service: ${{ airport: "Airport transfer", hourly: "Private driver", protection: "Private driver + bodyguards", intercity: "Out-of-town", monthly: "Monthly private driver" }[S.service]}`,
-      S.service === "airport" ? `• Airport: ${airport().name} (${airport().code}) — ${S.direction === "arrival" ? "arrival pick-up" : "departure drop-off"}${S.flight ? " · Flight " + S.flight : ""}` : null,
-      S.service === "intercity" && route() ? `• Destination: ${route().name} (${S.trip === "day" ? "day trip, return" : "one-way transfer"})` : null,
-      (S.service === "hourly" || S.service === "protection") ? `• Duration: ${S.hours} hours` : null,
-      `• Date & time: ${S.date || "TBC"} ${S.time || ""}`.trim(),
-      S.pickup ? `• Pick-up: ${S.pickup}` : null, S.dropoff ? `• Drop-off: ${S.dropoff}` : null,
-      `• Vehicle: ${v.name}`, `• Guests: ${S.pax} · Luggage: ${S.bags}`, "",
-      "Estimate:", ...L.map(([a, b]) => `  – ${a}: ${b == null ? "on request" : fmt(b)}`), `  = Total: ${T == null ? "on request" : fmt(T)}`, "",
-      `Name: ${S.name || "—"}`, S.phone ? `Phone: ${S.phone}` : null, S.email ? `Email: ${S.email}` : null, S.notes ? `Notes: ${S.notes}` : null,
-    ];
-    return rows.filter((r) => r !== null).join("\n");
+    const svc = { hourly: "Private driver", protection: "Private driver + bodyguards", airport: "Airport transfer", intercity: "Out of town", monthly: "Monthly private driver" }[S.service];
+    const rows = ["Hello SiamDrive, I would like to book:", "", `• Service: ${svc}`];
+    if (S.service === "hourly" || S.service === "protection") rows.push(`• Duration: ${S.hours} hours`);
+    if (S.service === "airport") rows.push(`• Airport: ${ap().name} (${ap().code}) — ${S.direction === "arrival" ? "arrival pick-up" : "departure drop-off"}${S.flight ? " · Flight " + S.flight : ""}`);
+    if (S.service === "intercity" && route()) rows.push(`• Destination: ${route().name} (${S.trip === "day" ? "day trip, return" : "one way"})`);
+    rows.push(`• Date & time: ${S.date || "TBC"}${S.time ? " " + S.time : ""}`);
+    if (S.pickup) rows.push(`• Pick-up: ${S.pickup}`);
+    rows.push(`• Vehicle: ${nCars(v) > 1 ? nCars(v) + " × " : ""}${v.name}`, `• Guests: ${S.pax}`, "", "Quote:");
+    L.forEach(([a, b]) => rows.push(`  – ${a}: ${b == null ? "on request" : fmt(b)}`));
+    rows.push(`  = Total: ${T == null ? "on request" : fmt(T)}`, "", `Name: ${S.name || "—"}`);
+    if (S.notes) rows.push(`Notes: ${S.notes}`);
+    return rows.join("\n");
   };
-  const save = () => { try { localStorage.setItem("sd-booking", JSON.stringify(S)); } catch {} };
 
-  /* ----- bind inputs ----- */
-  $$("[data-group]", root).forEach((b) => b.addEventListener("click", () => {
-    const g = b.dataset.group; if (g === "vehicle") return;
-    S[g] = b.dataset.value; syncGuards(); ["guards"].forEach((k) => { const o = root.querySelector(`[data-key=${k}] output`); if (o) o.textContent = S[k]; }); press(g, S[g]); press("guardPlan", S.guardPlan); save(); show();
+  /* ---------- render ---------- */
+  const shows = (key) => key.split(" ").some((k) => k === S.service || (k === "airport-bkk" && isBKK()));
+  const render = () => {
+    $$("[data-group]", root.parentNode).forEach((b) => b.setAttribute("aria-pressed", String(S[b.dataset.group]) === b.dataset.value));
+    $$("[data-show]", root).forEach((el) => (el.hidden = !shows(el.dataset.show)));
+    $$("[data-dir]", root).forEach((el) => (el.hidden = el.dataset.dir !== S.direction));
+    $$(".stepper", root).forEach((st) => ($("output", st).textContent = S[st.dataset.key]));
+    $$("input[type=checkbox][data-bind]", root).forEach((i) => (i.checked = !!S[i.dataset.bind]));
+    // keep a valid vehicle
+    const ok = (v) => S.service !== "monthly" || !!monthlyOf(v);
+    if (!ok(veh())) { const alt = P.vehicles.find(ok); if (alt) S.vehicle = alt.slug; }
+    $(".cars", root).innerHTML = P.vehicles.map((v) => {
+      const p = carPrice(v), n = nCars(v);
+      const dis = S.service === "monthly" && !monthlyOf(v);
+      return `<button type="button" class="car-opt" data-car="${v.slug}" aria-pressed="${v.slug === S.vehicle}"${dis ? " disabled" : ""}>
+        <img src="/assets/img/${v.img}-800.webp" alt="" loading="lazy" width="400" height="260">
+        <span class="car-opt-body"><b>${v.name}</b><small>${n > 1 ? `<span class="car-n">${n} cars for ${S.pax} guests</span>` : `${v.seats} seats · ${v.luggage} large bags`}</small>
+        <span class="car-opt-price">${dis ? "Monthly not available" : p != null ? fmt(p) : "Quote on request"}</span></span></button>`;
+    }).join("");
+    $$(".car-opt", root).forEach((b) => b.addEventListener("click", () => { S.vehicle = b.dataset.car; update(); }));
+    summary();
+  };
+  const summary = () => {
+    const L = lines(), T = total();
+    const priceTxt = T == null ? "On request" : fmt(T);
+    $(".qc-price b", root.parentNode).textContent = priceTxt;
+    $(".qc-sub").textContent = T == null ? "We'll quote this route on WhatsApp" : "Fixed price · estimate confirmed on WhatsApp";
+    $(".qc-lines").innerHTML = L.map(([a, b]) => `<div><span>${a}</span><span>${b == null ? "on request" : fmt(b)}</span></div>`).join("");
+    $$(".qc-bar-price").forEach((e) => (e.textContent = priceTxt));
+    const href = "https://wa.me/" + P.whatsapp + "?text=" + encodeURIComponent(message());
+    $$(".qc-send").forEach((a) => (a.href = href));
+  };
+  const update = () => { save(); render(); };
+
+  /* ---------- events ---------- */
+  $$("[data-group]", root.parentNode).forEach((b) => b.addEventListener("click", () => {
+    const g = b.dataset.group; S[g] = b.dataset.value;
+    if (g === "service") {
+      S.guards = S.service === "protection" ? 2 : 0; S.escort = false; S.ft = false;
+      if (S.service === "monthly" && !monthlyOf(veh())) S.vehicle = "toyota-alphard-40";
+    }
+    update();
   }));
+  $$(".stepper", root).forEach((st) => $$("button", st).forEach((b) => b.addEventListener("click", () => {
+    const k = st.dataset.key, min = +st.dataset.min, max = +st.dataset.max;
+    S[k] = Math.max(min, Math.min(max, S[k] + +b.dataset.d)); update();
+  })));
   $$("[data-bind]", root).forEach((i) => {
-    const k = i.dataset.bind; if (S[k] !== undefined && S[k] !== "") i.value = S[k];
-    i.addEventListener("input", () => { S[k] = i.type === "checkbox" ? i.checked : i.value; save(); renderSummary(); if (["dest", "airport"].includes(k)) show(); });
-    if (i.type === "checkbox") { i.checked = !!S[k]; i.addEventListener("change", () => { S[k] = i.checked; save(); renderSummary(); }); }
+    const k = i.dataset.bind;
+    if (i.type === "checkbox") { i.checked = !!S[k]; i.addEventListener("change", () => { S[k] = i.checked; update(); }); }
+    else { if (S[k]) i.value = S[k]; i.addEventListener(i.tagName === "SELECT" ? "change" : "input", () => { S[k] = i.value; i.tagName === "SELECT" ? update() : (save(), summary()); }); }
   });
-  $$(".counter", root).forEach((c) => {
-    const k = c.dataset.key, min = +c.dataset.min || 0, max = +c.dataset.max || 20, out = $("output", c);
-    out.textContent = S[k];
-    $$("button", c).forEach((b) => b.addEventListener("click", () => {
-      S[k] = Math.max(min, Math.min(max, +S[k] + (+b.dataset.d))); out.textContent = S[k];
-      if (k === "pax") { S.ftPax = S.pax; const fo = $('[data-key="ftPax"] output', root); if (fo) fo.textContent = S.ftPax; if (seatsOf(veh()) < S.pax) S.vehicle = P.vehicles.find((v) => seatsOf(v) >= S.pax)?.slug || S.vehicle; renderVehicles(); }
-      save(); renderSummary();
-    }));
-  });
-  ["service", "airport", "direction", "hours", "trip", "guardPlan", "escort"].forEach((g) => press(g, S[g]));
-
-  $(".wiz-next", root).addEventListener("click", () => { if (step === 2 && !S.date) { const d = $("[data-bind=date]", root); d && d.focus(); d && d.closest(".field").animate([{ borderColor: "#ff6b6b" }, { borderColor: "rgba(255,255,255,.09)" }], 900); } step = Math.min(steps, step + 1); show(); });
-  $(".wiz-back", root).addEventListener("click", () => { step = Math.max(1, step - 1); show(); });
-  $$(".wiz-steps button", root).forEach((b) => b.addEventListener("click", () => { step = +b.dataset.go; show(); }));
-  $(".wa-copy", root)?.addEventListener("click", async (e) => { try { await navigator.clipboard.writeText(message()); e.currentTarget.querySelector(".lbl").textContent = "Copied ✓"; } catch {} });
-  const dateIn = $("[data-bind=date]", root); if (dateIn) dateIn.min = new Date().toISOString().slice(0, 10);
-  show();
+  const d = $("[data-bind=date]", root); if (d) d.min = new Date().toISOString().slice(0, 10);
+  $(".qc-copy")?.addEventListener("click", async (e) => { try { await navigator.clipboard.writeText(message()); e.currentTarget.textContent = "Copied ✓"; } catch {} });
+  // mobile sticky bar: show once the calculator is on screen
+  const bar = $(".qc-bar");
+  if (bar && "IntersectionObserver" in window) new IntersectionObserver(([e]) => bar.classList.toggle("on", e.isIntersecting), { rootMargin: "0px 0px -40% 0px" }).observe(root);
+  render();
 })();

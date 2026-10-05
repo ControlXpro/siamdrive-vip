@@ -27,16 +27,21 @@ export function buildHome(ctx) {
         <div class="hero-cta">${btn("/book/?service=hourly", "Hire a private driver", "btn-light", I.cal, 'data-cursor="Book"')}${btn("/book/?service=protection&guards=2", "Book bodyguards", "btn-ghost", I.arrow, 'data-cursor="Book"')}</div>
       </div>
       <form class="qb" onsubmit="return false" aria-label="Instant price">
-        <div class="qb-tabs" role="tablist"><button type="button" role="tab" data-tab="driver" aria-selected="true">Private driver</button><button type="button" role="tab" data-tab="guards">Bodyguards</button><button type="button" role="tab" data-tab="airport">Airport</button></div>
-        <div class="qb-grid">
-          <div class="field" data-mode="driver guards"><label for="qb-h">Duration</label><select id="qb-h" name="hours"><option value="10">Full day · 10 hours</option><option value="5">Half day · 5 hours</option></select></div>
-          <div class="field" data-mode="guards" hidden><label for="qb-g">Bodyguards</label><select id="qb-g" name="guards"><option value="1">1 guard</option><option value="2" selected>2 guards</option><option value="3">3 guards</option><option value="4">4 guards</option></select></div>
-          <div class="field" data-mode="driver"><label for="qb-d">Date</label><input id="qb-d" name="date" type="date"></div>
-          <div class="field" data-mode="airport" hidden><label>Airport</label><select name="airport"><option>Suvarnabhumi (BKK)</option><option>Don Mueang (DMK)</option></select></div>
-          <div class="field full"><label for="qb-v">Vehicle</label><select id="qb-v" name="vehicle">${D.VEHICLES.map((v) => `<option value="${v.slug}"${v.slug === "toyota-alphard-40" ? " selected" : ""}>${v.name} · ${v.seats} seats</option>`).join("")}</select></div>
+        <p class="qb-title">Instant price</p>
+        <div class="qb-pills" role="group" aria-label="Service">
+          <button type="button" data-qb="mode" data-v="driver" aria-pressed="true">Private driver</button>
+          <button type="button" data-qb="mode" data-v="guards" aria-pressed="false">Driver + bodyguards</button>
+          <button type="button" data-qb="mode" data-v="airport" aria-pressed="false">Airport</button>
         </div>
-        <div class="qb-foot"><div class="qb-price"><small>Private driver</small><b>—</b></div><a class="btn btn-light btn-sm qb-go" href="/book/"><span class="ic">${I.arrow}</span>Continue</a></div>
-        <p class="qb-note">Driver, fuel &amp; tolls included · chauffeur stays with you · confirmed on WhatsApp</p>
+        <div class="qb-seg" data-when="driver guards" role="group" aria-label="Duration">
+          <button type="button" data-qb="hours" data-v="5" aria-pressed="false">Half day <small>5 hrs</small></button>
+          <button type="button" data-qb="hours" data-v="10" aria-pressed="true">Full day <small>10 hrs</small></button>
+        </div>
+        <div class="qb-step" data-when="guards" hidden><span>Bodyguards</span><div class="stepper-ctl"><button type="button" data-qb-step="-1" aria-label="Fewer bodyguards">−</button><output class="qb-g">2</output><button type="button" data-qb-step="1" aria-label="More bodyguards">+</button></div></div>
+        <div class="qb-step" data-when="airport" hidden><span>Airport</span><b>Suvarnabhumi or Don Mueang</b></div>
+        <div class="field full qb-car"><label for="qb-v">Car</label><select id="qb-v" name="vehicle">${D.VEHICLES.map((v) => `<option value="${v.slug}"${v.slug === "toyota-alphard-40" ? " selected" : ""}>${v.name} · ${v.seats} seats</option>`).join("")}</select></div>
+        <div class="qb-foot"><div class="qb-price"><b>—</b><small>Private driver · 10 hours</small></div><a class="btn btn-light btn-sm qb-go" href="/book/" data-cursor="Book"><span class="ic">${I.arrow}</span>Book this</a></div>
+        <p class="qb-note">No payment now · driver, fuel &amp; tolls included · confirmed on WhatsApp</p>
       </form>
     </div>
     <div class="hero-strip">

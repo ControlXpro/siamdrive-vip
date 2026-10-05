@@ -21,7 +21,7 @@
 <meta name="twitter:image" content="https://siamdrive.vip/assets/img/og.jpg">
 <link rel="icon" href="/assets/img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/img/mark.png">
-<link rel="stylesheet" href="/assets/css/site.css?v=muui7ntn">
+<link rel="stylesheet" href="/assets/css/site.css?v=muuimubd">
 
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":["LocalBusiness","TravelAgency"],"@id":"https://siamdrive.vip/#business","name":"SiamDrive","alternateName":"SiamDrive.vip","url":"https://siamdrive.vip/","logo":"https://siamdrive.vip/assets/img/mark.png","image":"https://siamdrive.vip/assets/img/og.jpg","telephone":"+66962212364","priceRange":"฿฿฿","description":"Private chauffeur, VIP airport fast-track and personal bodyguard service in Bangkok, Thailand.","address":{"@type":"PostalAddress","addressLocality":"Bangkok","addressCountry":"TH"},"areaServed":[{"@type":"City","name":"Bangkok"},{"@type":"Country","name":"Thailand"}],"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"00:00","closes":"23:59"},"contactPoint":{"@type":"ContactPoint","telephone":"+66962212364","contactType":"reservations","availableLanguage":["English","Thai"]}},{"@type":"WebSite","@id":"https://siamdrive.vip/#website","url":"https://siamdrive.vip/","name":"SiamDrive","publisher":{"@id":"https://siamdrive.vip/#business"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does hiring a private driver work?","acceptedAnswer":{"@type":"Answer","text":"Choose a vehicle and book a 5-hour or 10-hour block. Your chauffeur collects you and stays with the car for the whole booking — meetings, shopping, dinners, as many stops as you like. Extra time is billed per hour at the published overtime rate."}},{"@type":"Question","name":"Can I add bodyguards to my driver booking?","acceptedAnswer":{"@type":"Answer","text":"Yes. Suited, English-speaking bodyguards are booked per guard for a transfer, 5 hours or 10 hours, and are coordinated with your chauffeur so car and protection move as one. Protection is always booked together with a SiamDrive vehicle."}},{"@type":"Question","name":"Are fuel, tolls and the driver included?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every chauffeured rate includes the driver, fuel and expressway tolls. Monthly packages exclude fuel and tolls. Overtime, overnight stays and add-ons are listed upfront."}},{"@type":"Question","name":"Can I keep the same driver for my whole stay?","acceptedAnswer":{"@type":"Answer","text":"Monthly packages give you a dedicated chauffeur and car seven days a week, ten hours a day, with unlimited kilometres. For shorter stays, ask the concierge to keep the same chauffeur across your bookings."}},{"@type":"Question","name":"How quickly can you confirm?","acceptedAnswer":{"@type":"Answer","text":"Send your booking from the form or message us on WhatsApp — the concierge confirms vehicle, chauffeur and fixed price, usually within minutes, 24 hours a day."}},{"@type":"Question","name":"Do you also do airport pick-ups?","acceptedAnswer":{"@type":"Answer","text":"Of course. We meet you in arrivals with a name sign and track your flight; at Suvarnabhumi you can add Fast-Track and a private electric buggy from the aircraft door."}}]}]}</script>
 </head>
@@ -65,16 +65,21 @@
         <div class="hero-cta"><a class="btn btn-light" href="/book/?service=hourly" data-cursor="Book"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>Hire a private driver</a><a class="btn btn-ghost" href="/book/?service=protection&guards=2" data-cursor="Book"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 19L19 5M9 5h10v10"/></svg></span>Book bodyguards</a></div>
       </div>
       <form class="qb" onsubmit="return false" aria-label="Instant price">
-        <div class="qb-tabs" role="tablist"><button type="button" role="tab" data-tab="driver" aria-selected="true">Private driver</button><button type="button" role="tab" data-tab="guards">Bodyguards</button><button type="button" role="tab" data-tab="airport">Airport</button></div>
-        <div class="qb-grid">
-          <div class="field" data-mode="driver guards"><label for="qb-h">Duration</label><select id="qb-h" name="hours"><option value="10">Full day · 10 hours</option><option value="5">Half day · 5 hours</option></select></div>
-          <div class="field" data-mode="guards" hidden><label for="qb-g">Bodyguards</label><select id="qb-g" name="guards"><option value="1">1 guard</option><option value="2" selected>2 guards</option><option value="3">3 guards</option><option value="4">4 guards</option></select></div>
-          <div class="field" data-mode="driver"><label for="qb-d">Date</label><input id="qb-d" name="date" type="date"></div>
-          <div class="field" data-mode="airport" hidden><label>Airport</label><select name="airport"><option>Suvarnabhumi (BKK)</option><option>Don Mueang (DMK)</option></select></div>
-          <div class="field full"><label for="qb-v">Vehicle</label><select id="qb-v" name="vehicle"><option value="toyota-camry">Toyota Camry · 3+1 seats</option><option value="toyota-alphard-30">Toyota Alphard 30 · 5+1 seats</option><option value="toyota-alphard-40" selected>Toyota Alphard 40 · 5+1 seats</option><option value="rowen-vellfire-z">Rowen Vellfire Z · 5+1 seats</option><option value="toyota-alphard-40-executive">Alphard 40 Executive · 5+1 seats</option><option value="porsche-cayenne-s">Porsche Cayenne S · 3+1 seats</option></select></div>
+        <p class="qb-title">Instant price</p>
+        <div class="qb-pills" role="group" aria-label="Service">
+          <button type="button" data-qb="mode" data-v="driver" aria-pressed="true">Private driver</button>
+          <button type="button" data-qb="mode" data-v="guards" aria-pressed="false">Driver + bodyguards</button>
+          <button type="button" data-qb="mode" data-v="airport" aria-pressed="false">Airport</button>
         </div>
-        <div class="qb-foot"><div class="qb-price"><small>Private driver</small><b>—</b></div><a class="btn btn-light btn-sm qb-go" href="/book/"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 19L19 5M9 5h10v10"/></svg></span>Continue</a></div>
-        <p class="qb-note">Driver, fuel &amp; tolls included · chauffeur stays with you · confirmed on WhatsApp</p>
+        <div class="qb-seg" data-when="driver guards" role="group" aria-label="Duration">
+          <button type="button" data-qb="hours" data-v="5" aria-pressed="false">Half day <small>5 hrs</small></button>
+          <button type="button" data-qb="hours" data-v="10" aria-pressed="true">Full day <small>10 hrs</small></button>
+        </div>
+        <div class="qb-step" data-when="guards" hidden><span>Bodyguards</span><div class="stepper-ctl"><button type="button" data-qb-step="-1" aria-label="Fewer bodyguards">−</button><output class="qb-g">2</output><button type="button" data-qb-step="1" aria-label="More bodyguards">+</button></div></div>
+        <div class="qb-step" data-when="airport" hidden><span>Airport</span><b>Suvarnabhumi or Don Mueang</b></div>
+        <div class="field full qb-car"><label for="qb-v">Car</label><select id="qb-v" name="vehicle"><option value="toyota-camry">Toyota Camry · 3+1 seats</option><option value="toyota-alphard-30">Toyota Alphard 30 · 5+1 seats</option><option value="toyota-alphard-40" selected>Toyota Alphard 40 · 5+1 seats</option><option value="rowen-vellfire-z">Rowen Vellfire Z · 5+1 seats</option><option value="toyota-alphard-40-executive">Alphard 40 Executive · 5+1 seats</option><option value="porsche-cayenne-s">Porsche Cayenne S · 3+1 seats</option></select></div>
+        <div class="qb-foot"><div class="qb-price"><b>—</b><small>Private driver · 10 hours</small></div><a class="btn btn-light btn-sm qb-go" href="/book/" data-cursor="Book"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 19L19 5M9 5h10v10"/></svg></span>Book this</a></div>
+        <p class="qb-note">No payment now · driver, fuel &amp; tolls included · confirmed on WhatsApp</p>
       </form>
     </div>
     <div class="hero-strip">
@@ -263,7 +268,7 @@
 <script src="/assets/vendor/gsap.min.js" defer></script>
 <script src="/assets/vendor/ScrollTrigger.min.js" defer></script>
 <script src="/assets/vendor/lenis.min.js" defer></script>
-<script src="/assets/js/site.js?v=muui7ntn" defer></script>
+<script src="/assets/js/site.js?v=muuimubd" defer></script>
 
 </body>
 </html>

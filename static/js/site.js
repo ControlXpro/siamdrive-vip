@@ -152,33 +152,29 @@
     document.readyState === "complete" ? setTimeout(go, 300) : addEventListener("load", () => setTimeout(go, 300), { once: true });
   }
 
-  /* ---------- quick-book (home hero) ---------- */
+  /* ---------- instant price (home hero) ---------- */
   const qb = $(".qb");
   if (qb && window.SD) {
-    const P = window.SD, fmt = (n) => n.toLocaleString("en-US");
-    const tabs = $$(".qb-tabs button", qb), sel = (n) => $(`[name=${n}]`, qb);
-    let mode = "driver";
-    const groups = $$("[data-mode]", qb);
-    const setMode = (m) => { mode = m; tabs.forEach((t) => t.setAttribute("aria-selected", t.dataset.tab === m)); groups.forEach((g) => (g.hidden = !g.dataset.mode.split(" ").includes(m))); calc(); };
-    tabs.forEach((t) => t.addEventListener("click", () => setMode(t.dataset.tab)));
+    const P = window.SD, fmt = (n) => n.toLocaleString("en-US") + " THB";
+    const q = { mode: "driver", hours: "10", guards: 2 };
+    const car = $("[name=vehicle]", qb);
     const calc = () => {
-      const v = P.vehicles.find((x) => x.slug === sel("vehicle").value) || P.vehicles[0];
-      const h = sel("hours").value, car = h === "10" ? v.price.bkk10 : v.price.bkk5;
-      let price = car, label = `Private driver · ${h} hours`;
-      const q = new URLSearchParams({ vehicle: v.slug });
-      if (mode === "driver") { q.set("service", "hourly"); q.set("hours", h); }
-      if (mode === "guards") {
-        const g = +sel("guards").value; price = car + g * (h === "10" ? P.bodyguard.h10 : P.bodyguard.h5);
-        label = `Driver + ${g} bodyguard${g > 1 ? "s" : ""} · ${h} hours`; q.set("service", "protection"); q.set("hours", h); q.set("guards", g);
-      }
-      if (mode === "airport") { price = v.price.airport; label = "Airport transfer"; q.set("service", "airport"); }
-      $(".qb-price b", qb).textContent = fmt(price) + " THB";
+      $$("[data-qb]", qb).forEach((b) => b.setAttribute("aria-pressed", String(q[b.dataset.qb]) === b.dataset.v));
+      $$("[data-when]", qb).forEach((el) => (el.hidden = !el.dataset.when.split(" ").includes(q.mode)));
+      $(".qb-g", qb).textContent = q.guards;
+      const v = P.vehicles.find((x) => x.slug === car.value) || P.vehicles[0];
+      const base = q.hours === "10" ? v.price.bkk10 : v.price.bkk5;
+      let price = base, label = `Private driver · ${q.hours} hours`, href = { service: "hourly", hours: q.hours, vehicle: v.slug };
+      if (q.mode === "guards") { price = base + q.guards * (q.hours === "10" ? P.bodyguard.h10 : P.bodyguard.h5); label = `Driver + ${q.guards} bodyguard${q.guards > 1 ? "s" : ""} · ${q.hours} hours`; href = { service: "protection", hours: q.hours, guards: q.guards, vehicle: v.slug }; }
+      if (q.mode === "airport") { price = v.price.airport; label = "Airport transfer · one way"; href = { service: "airport", vehicle: v.slug }; }
+      $(".qb-price b", qb).textContent = fmt(price);
       $(".qb-price small", qb).textContent = label + " · " + v.name;
-      if (sel("date") && sel("date").value) q.set("date", sel("date").value);
-      $(".qb-go", qb).href = "/book/?" + q.toString();
+      $(".qb-go", qb).href = "/book/?" + new URLSearchParams(href).toString();
     };
-    $$("select,input", qb).forEach((i) => i.addEventListener("change", calc));
-    setMode("driver");
+    $$("[data-qb]", qb).forEach((b) => b.addEventListener("click", () => { q[b.dataset.qb] = b.dataset.v; calc(); }));
+    $$("[data-qb-step]", qb).forEach((b) => b.addEventListener("click", () => { q.guards = Math.max(1, Math.min(8, q.guards + +b.dataset.qbStep)); calc(); }));
+    car.addEventListener("change", calc);
+    calc();
   }
 
   /* refresh triggers once fonts/images settle */
